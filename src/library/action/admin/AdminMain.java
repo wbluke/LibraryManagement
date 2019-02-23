@@ -651,7 +651,7 @@ public class AdminMain extends JFrame {
 		if (table_3Checked != -1 && (String)table_3.getValueAt(table_3Checked, 4) != null) {
 			button_7.setEnabled(true);
 		}
-	}
+	} 
 
 	public static void main(String[] args) {
 		new AdminMain(null); 
