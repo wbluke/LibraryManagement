@@ -12,7 +12,7 @@ import login.bean.MemberDTO;
 
 public class MemberDAO {
 	private String driver = "oracle.jdbc.driver.OracleDriver";
-	private String url = "jdbc:oracle:thin:@localhost:1521:xe";
+	private String url = "jdbc:oracle:thin:@192.168.51.87:1521:xe";
 	private String user = "java";
 	private String password = "itbank";
 	private static MemberDAO instance;
@@ -226,6 +226,47 @@ public class MemberDAO {
 		
 		
 		return memberDTO;
+	}
+
+	public ArrayList<MemberDTO> searchByBlackList() {
+		ArrayList<MemberDTO> list = new ArrayList<>();
+		
+		Connection conn = getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "select * from members where overdue >= 3";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				MemberDTO memberDTO = new MemberDTO();
+				memberDTO.setSeq(rs.getInt("seq"));
+				memberDTO.setMemberName(rs.getString("memberName"));
+				memberDTO.setMemberId(rs.getString("memberId"));
+				memberDTO.setPw(rs.getString("pw"));
+				memberDTO.setGender(rs.getInt("gender"));
+				memberDTO.setAddress(rs.getString("address"));
+				memberDTO.setTel1(rs.getString("tel1"));
+				memberDTO.setTel2(rs.getString("tel2"));
+				memberDTO.setTel3(rs.getString("tel3"));
+				memberDTO.setEmail(rs.getString("email"));
+				memberDTO.setOverdue(rs.getInt("overdue"));
+				list.add(memberDTO);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
+			}catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return list;
 	}   
 
 }

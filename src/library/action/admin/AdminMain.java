@@ -23,6 +23,7 @@ import java.awt.SystemColor;
 import javax.swing.UIManager;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.DateFormatter;
 
 import library.action.LibraryMain;
 import library.bean.BookDTO;
@@ -36,7 +37,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.ScrollPaneConstants;
 
@@ -71,7 +76,10 @@ public class AdminMain extends JFrame {
 	private int table_3Checked = -1;
 	private JButton button_5;
 	private JButton button_7;
+	private DefaultTableModel dtm4;
+	private int table_4Checked = -1;
 
+	@SuppressWarnings("serial")
 	public AdminMain(MemberDTO memberDTO) {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -453,7 +461,11 @@ public class AdminMain extends JFrame {
 				new String[] {
 					"이름", "회원 ID", "주소", "연락처", "이메일"
 				}
-			);
+			) {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 		table_2.setModel(dtm2);
 		table_2.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		scrollPane_2.setColumnHeaderView(table_2);
@@ -485,7 +497,11 @@ public class AdminMain extends JFrame {
 				new String[] {
 						"번호", "책 제목", "회원 ID", "회원 이름", "대여일", "반납일"
 				}
-			);
+			) {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 		table_3.setModel(dtm3);
 		table_3.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		
@@ -546,6 +562,7 @@ public class AdminMain extends JFrame {
 							book.getSeq(), book.getBookName(), book.getMemberId(), nameWhoBorrowed, book.getSt(), book.getEn()
 						};
 						dtm3.addRow(data);
+						nameWhoBorrowed = null;
 					}
 				}
 			}
@@ -555,16 +572,137 @@ public class AdminMain extends JFrame {
 		statement.add(button_2);
 		
 		button_5 = new JButton("\uB300\uC5EC\uD558\uAE30");
+		button_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int result = JOptionPane.showConfirmDialog(null, "대여하시겠습니까?", "대여 확인", JOptionPane.YES_NO_OPTION);
+				if (result == JOptionPane.YES_OPTION) {
+					// table_2 에서 memberID 가져오기
+					String targetID = (String) table_2.getValueAt(table_2Checked, 1);
+					
+					// 블랙리스트인지 체크
+					MemberDAO memberDAO = MemberDAO.getInstance();
+					MemberDTO member = memberDAO.searchByID(targetID);
+					if (member.getOverdue() >= 3) {
+						JOptionPane.showMessageDialog(
+								null, "해당 회원은 블랙리스트로 대여 불가 대상입니다.", "안내", 
+								JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+					
+					// table_3 에서 seq 가져오기
+					int targetBookSeq = (int) table_3.getValueAt(table_3Checked, 0);
+
+					// 현재 sysDate를 String으로 바꿔서 반납 날짜까지 계산해서 넣기
+					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+					String now = formatter.format(new Date());
+					Calendar cal = Calendar.getInstance();
+					String until = null;
+					try {
+						cal.setTime(formatter.parse(now));
+						cal.add(Calendar.DATE, 14);
+						until = formatter.format(cal.getTime());
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					// DAO 작업
+					//System.out.println(now + until);
+					BookDAO bookDAO = BookDAO.getInstance();
+					bookDAO.updateBorrowInfo(targetBookSeq, targetID, now, until);
+					
+					// ============================================================ 테이블 새로고침 : 함수로 만들기 복잡해서 중복코드
+					String nameWhoBorrowed = null;
+					ArrayList<BookDTO> list = bookDAO.searchByName(textField_15.getText().trim());
+					
+					// DefaultTableModel에 있는 기존 데이터 지우기
+					for (int i = 0; i < dtm3.getRowCount();) {
+						dtm3.removeRow(0);
+					}         
+
+					if(list.isEmpty()) {
+						JOptionPane.showMessageDialog(
+								null, "검색 결과가 없습니다.", "안내", 
+								JOptionPane.WARNING_MESSAGE);
+					}else {
+						for(BookDTO book : list) {
+							if (book.getMemberId() != null) {
+								MemberDTO whoBorrowed = memberDAO.searchByID(book.getMemberId());
+								nameWhoBorrowed = whoBorrowed.getMemberName();
+							}
+							
+							Object data[] = { 
+								book.getSeq(), book.getBookName(), book.getMemberId(), nameWhoBorrowed, book.getSt(), book.getEn()
+							};
+							dtm3.addRow(data);
+							nameWhoBorrowed = null;
+						}
+					}
+				}
+			}
+		});
+		
 		button_5.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		button_5.setBounds(367, 270, 99, 23);
 		statement.add(button_5);
 		
 		JButton button_6 = new JButton("\uC9C0\uC6B0\uAE30");
+		button_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// DefaultTableModel에 있는 기존 데이터 지우기
+				for (int i = 0; i < dtm3.getRowCount();) {
+					dtm3.removeRow(0);
+				} 
+			}
+		});
 		button_6.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		button_6.setBounds(589, 270, 99, 23);
 		statement.add(button_6);
 		
 		button_7 = new JButton("\uBC18\uB0A9\uD558\uAE30");
+		button_7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int result = JOptionPane.showConfirmDialog(null, "반납하시겠습니까?", "반납 확인", JOptionPane.YES_NO_OPTION);
+				if (result == JOptionPane.YES_OPTION) {
+					
+					// table_3 에서 seq 가져오기
+					int targetBookSeq = (int) table_3.getValueAt(table_3Checked, 0);
+
+					// DAO 작업
+					//System.out.println(now + until);
+					BookDAO bookDAO = BookDAO.getInstance();
+					MemberDAO memberDAO = MemberDAO.getInstance();
+					bookDAO.updateReturnInfo(targetBookSeq);
+					
+					// ============================================================ 테이블 새로고침 : 함수로 만들기 복잡해서 중복코드
+					String nameWhoBorrowed = null;
+					ArrayList<BookDTO> list = bookDAO.searchByName(textField_15.getText().trim());
+					
+					// DefaultTableModel에 있는 기존 데이터 지우기
+					for (int i = 0; i < dtm3.getRowCount();) {
+						dtm3.removeRow(0);
+					}         
+
+					if(list.isEmpty()) {
+						JOptionPane.showMessageDialog(
+								null, "검색 결과가 없습니다.", "안내", 
+								JOptionPane.WARNING_MESSAGE);
+					}else {
+						for(BookDTO book : list) {
+							if (book.getMemberId() != null) {
+								MemberDTO whoBorrowed = memberDAO.searchByID(book.getMemberId());
+								nameWhoBorrowed = whoBorrowed.getMemberName();
+							}
+							
+							Object data[] = { 
+								book.getSeq(), book.getBookName(), book.getMemberId(), nameWhoBorrowed, book.getSt(), book.getEn()
+							};
+							dtm3.addRow(data);
+							nameWhoBorrowed = null;
+						}
+					}
+				}
+			}
+		});
 		button_7.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		button_7.setBounds(478, 270, 99, 23);
 		statement.add(button_7);
@@ -580,16 +718,133 @@ public class AdminMain extends JFrame {
 		overdue.add(label_12);
 		
 		JButton button_8 = new JButton("\uBC18\uB0A9 \uC608\uC815");
+		button_8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// DefaultTableModel에 있는 기존 데이터 지우기
+				for (int i = 0; i < dtm4.getRowCount();) {
+					dtm4.removeRow(0);
+				}  
+				
+				// 오늘 날짜에 해당되는 데이터 추출
+				BookDAO bookDAO = BookDAO.getInstance();
+				MemberDAO memberDAO = MemberDAO.getInstance();
+				ArrayList<BookDTO> list = bookDAO.searchBorrowListByToday();
+				
+				String memberName = null;
+				int overdue = -1;
+				String blackList = null;
+				if(list.isEmpty()) {
+					JOptionPane.showMessageDialog(
+							null, "오늘 반납 예정인 회원이 없습니다.", "안내", 
+							JOptionPane.WARNING_MESSAGE);
+				}else {
+					
+					for(BookDTO book : list) {
+						MemberDTO member = memberDAO.searchByID(book.getMemberId());
+						memberName = member.getMemberName();
+						overdue = member.getOverdue();
+						if (overdue >= 3) {
+							blackList = "YES";
+						}else {
+							blackList = null;
+						}
+						
+						// 테이블에 뿌리기 
+						Object data[] = { 
+							book.getMemberId(), memberName, book.getBookName(), book.getSt(), book.getEn(), overdue, blackList
+						};
+						dtm4.addRow(data);
+					}
+				}
+			}
+		});
 		button_8.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		button_8.setBounds(26, 75, 99, 23);
 		overdue.add(button_8);
 		
 		JButton button_9 = new JButton("\uC5F0\uCCB4\uC790\uBAA9\uB85D");
+		button_9.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// DefaultTableModel에 있는 기존 데이터 지우기
+				for (int i = 0; i < dtm4.getRowCount();) {
+					dtm4.removeRow(0);
+				}  
+				
+				// 오늘 날짜에 해당되는 데이터 추출
+				BookDAO bookDAO = BookDAO.getInstance();
+				MemberDAO memberDAO = MemberDAO.getInstance();
+				ArrayList<BookDTO> list = bookDAO.searchBorrowListUntilYesterday();
+				
+				String memberName = null;
+				int overdue = -1;
+				String blackList = null;
+				if(list.isEmpty()) {
+					JOptionPane.showMessageDialog(
+							null, "오늘 반납 예정인 회원이 없습니다.", "안내", 
+							JOptionPane.WARNING_MESSAGE);
+				}else {
+					
+					for(BookDTO book : list) {
+						MemberDTO member = memberDAO.searchByID(book.getMemberId());
+						memberName = member.getMemberName();
+						overdue = member.getOverdue();
+						if (overdue >= 3) {
+							blackList = "YES";
+						}else {
+							blackList = null;
+						}
+						
+						// 테이블에 뿌리기 
+						Object data[] = { 
+							book.getMemberId(), memberName, book.getBookName(), book.getSt(), book.getEn(), overdue, blackList
+						};
+						dtm4.addRow(data);
+					}
+				}
+			}
+		});
 		button_9.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		button_9.setBounds(137, 75, 99, 23);
 		overdue.add(button_9);
 		
 		JButton button_10 = new JButton("\uBE14\uB799\uB9AC\uC2A4\uD2B8");
+		button_10.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// DefaultTableModel에 있는 기존 데이터 지우기
+				for (int i = 0; i < dtm4.getRowCount();) {
+					dtm4.removeRow(0);
+				} 
+				
+				// 오늘 날짜에 해당되는 데이터 추출
+				BookDAO bookDAO = BookDAO.getInstance();
+				MemberDAO memberDAO = MemberDAO.getInstance();
+				ArrayList<MemberDTO> list = memberDAO.searchByBlackList();
+				
+				int overdue = -1;
+				String blackList = null;
+				if(list.isEmpty()) {
+					JOptionPane.showMessageDialog(
+							null, "현재 블랙리스트가 없습니다.", "안내", 
+							JOptionPane.WARNING_MESSAGE);
+				}else {
+					
+					for(MemberDTO member : list) {
+						overdue = member.getOverdue();
+						if (overdue >= 3) {
+							blackList = "YES";
+						}else {
+							blackList = null;
+						}
+						
+						// 테이블에 뿌리기 
+						Object data[] = { 
+								member.getMemberId(), member.getMemberName(), "", "", "", overdue, blackList
+						};
+						dtm4.addRow(data);
+					}
+				}
+			}
+		});
 		button_10.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		button_10.setBounds(248, 75, 99, 23);
 		overdue.add(button_10);
@@ -601,13 +856,18 @@ public class AdminMain extends JFrame {
 		
 		table_4 = new JTable();
 		table_4.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		table_4.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"아이디", "회원 이름", "도서명", "대여일", "반납일", "연체 횟수", "블랙리스트"
+		dtm4 = new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"아이디", "회원 이름", "도서명", "대여일", "반납일", "연체 횟수", "블랙리스트"
+				}
+			) {
+			public boolean isCellEditable(int row, int column) {
+				return false;
 			}
-		));
+		};
+		table_4.setModel(dtm4);
 		table_4.getColumnModel().getColumn(0).setPreferredWidth(90);
 		table_4.getColumnModel().getColumn(1).setPreferredWidth(80);
 		table_4.getColumnModel().getColumn(2).setPreferredWidth(150);
@@ -619,7 +879,23 @@ public class AdminMain extends JFrame {
 		table_4.setBounds(48, 160, 644, 196);
 		scrollPane_4.setViewportView(table_4);
 		
+		table_4.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				table_4Checked = table_4.getSelectedRow();
+			}
+		});
+		
 		JButton btnNewButton_4 = new JButton("\uC774\uBA54\uC77C \uC804\uC1A1");
+		btnNewButton_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String targetID = (String) table_4.getValueAt(table_4Checked, 0);
+				MemberDAO memberDAO = MemberDAO.getInstance();
+				MemberDTO target = memberDAO.searchByID(targetID);
+				
+				// 새로운 창 생성
+				new SendEmailToBlack(target);
+			}
+		});
 		btnNewButton_4.setFont(new Font("맑은 고딕", Font.BOLD, 14));
 		btnNewButton_4.setBounds(592, 397, 133, 45);
 		overdue.add(btnNewButton_4);
@@ -644,12 +920,16 @@ public class AdminMain extends JFrame {
 	private void setEnableBorrowB() {
 		if (table_2Checked != -1 && table_3Checked != -1 && (String)table_3.getValueAt(table_3Checked, 4) == null) {
 			button_5.setEnabled(true);
+		}else {
+			button_5.setEnabled(false);
 		}
 	}
 	
 	private void setEnableReturnB() {
 		if (table_3Checked != -1 && (String)table_3.getValueAt(table_3Checked, 4) != null) {
 			button_7.setEnabled(true);
+		}else {
+			button_7.setEnabled(false);			
 		}
 	} 
 
