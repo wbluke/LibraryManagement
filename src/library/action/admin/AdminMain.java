@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.CardLayout;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.JRadioButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,6 +19,7 @@ import javax.swing.JTabbedPane;
 import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.SystemColor;
 import javax.swing.UIManager;
@@ -78,6 +80,13 @@ public class AdminMain extends JFrame {
 	private JButton button_7;
 	private DefaultTableModel dtm4;
 	private int table_4Checked = -1;
+	private DefaultTableModel dtm;
+	private JComboBox comboBox;
+	private JComboBox comboBox_1;
+	private DefaultTableModel dtm1;
+	private JRadioButton rdbtnNewRadioButton;
+	private JRadioButton radioButton;
+	private JComboBox comboBox_2;
 
 	@SuppressWarnings("serial")
 	public AdminMain(MemberDTO memberDTO) {
@@ -103,6 +112,36 @@ public class AdminMain extends JFrame {
 		books.add(label);
 		
 		JButton btnNewButton = new JButton("\uAC80\uC0C9");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// DefaultTableModel에 있는 기존 데이터 지우기
+		        for (int i = 0; i < dtm.getRowCount();) {
+		        	dtm.removeRow(0);
+		        }
+		        
+				BookDAO bookDAO = BookDAO.getInstance();
+				ArrayList<BookDTO> list = bookDAO.searchElement((String)comboBox.getSelectedItem(), textField.getText().trim());
+				
+				if (list.isEmpty()) {
+					JOptionPane.showMessageDialog(
+			                  null, "검색한 단어의 책이 없습니다. \n검색을 원하시면 다시 입력해주세요.", "안내", 
+			                  JOptionPane.WARNING_MESSAGE);
+				}else {
+					for(BookDTO book : list) {
+						String borrowed = null;
+						if (book.getSt() == null) {
+							borrowed = "";
+						}else {
+							borrowed = "대여중";
+						}
+						
+						Object data[] = { book.getSeq(), book.getBookName(), book.getWriter(), book.getPublisher(), book.getCode(), borrowed};
+						dtm.addRow(data);
+					}
+				}
+
+			}
+		});
 		btnNewButton.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
 		btnNewButton.setBounds(625, 76, 67, 34);
 		books.add(btnNewButton);
@@ -112,7 +151,7 @@ public class AdminMain extends JFrame {
 		books.add(textField);
 		textField.setColumns(10);
 		
-		JComboBox comboBox = new JComboBox();
+		comboBox = new JComboBox();
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"\uC804\uCCB4", "\uB3C4\uC11C\uBA85", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974"}));
 		comboBox.setBounds(335, 76, 62, 34);
 		books.add(comboBox);
@@ -124,13 +163,18 @@ public class AdminMain extends JFrame {
 		
 		table = new JTable();
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"\uBC88\uD638", "\uCC45 \uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974", "대여 여부"
+		dtm = new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"\uBC88\uD638", "\uCC45 \uC81C\uBAA9", "\uC800\uC790", "\uCD9C\uD310\uC0AC", "\uC7A5\uB974", "대여 여부"
+				}
+			){
+			public boolean isCellEditable(int row, int column) {
+				return false;
 			}
-		));
+		};
+		table.setModel(dtm);
 		table.getColumnModel().getColumn(0).setPreferredWidth(50);
 		table.getColumnModel().getColumn(1).setPreferredWidth(236);
 		table.getColumnModel().getColumn(2).setPreferredWidth(100);
@@ -139,9 +183,59 @@ public class AdminMain extends JFrame {
 		table.getColumnModel().getColumn(5).setPreferredWidth(70);
 		table.getTableHeader().setReorderingAllowed(false); //테이블 컬럼 순서 변경 금지
 		table.setBounds(48, 160, 644, 196);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(table);
 		
 		JButton btnNewButton_1 = new JButton("\uC0AD\uC81C");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BookDAO bookDAO = new BookDAO();
+				int row = table.getSelectedRow();
+				int col = table.getSelectedColumn();
+				String value = "" + table.getValueAt(row, 0);
+
+				DefaultTableModel model2 = (DefaultTableModel) table.getModel();
+
+				int result = JOptionPane.showConfirmDialog(null, "정말 삭제하시겠습니까?", "도서 삭제",
+						JOptionPane.YES_NO_OPTION);
+				if (result == 0) {
+					JOptionPane.showMessageDialog(null, "책 정보를 삭제하였습니다.");
+					
+					bookDAO.delete(Integer.parseInt(value));
+				}
+				
+				//============================================================새로고침(새로 검색)
+				// DefaultTableModel에 있는 기존 데이터 지우기
+		        for (int i = 0; i < dtm.getRowCount();) {
+		        	dtm.removeRow(0);
+		        }
+		        
+				ArrayList<BookDTO> list = bookDAO.searchElement((String)comboBox.getSelectedItem(), textField.getText().trim());
+				
+				if (list.isEmpty()) {
+					
+				}else {
+					for(BookDTO book : list) {
+						String borrowed = null;
+						if (book.getSt() == null) {
+							borrowed = "";
+						}else {
+							borrowed = "대여중";
+						}
+						
+						Object data[] = { book.getSeq(), book.getBookName(), book.getWriter(), book.getPublisher(), book.getCode(), borrowed};
+						dtm.addRow(data);
+					}
+				}
+				textField_1.setText("");// 도서 번호
+				textField_4.setText("");// 도서명
+				textField_5.setText("");// 저자
+				textField_2.setText("");// 출판사
+				comboBox_1.setSelectedItem("소설");// 장르
+				textField_6.setText("");// 대여여부
+				
+			}
+		});
 		btnNewButton_1.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
 		btnNewButton_1.setBounds(625, 120, 67, 30);
 		books.add(btnNewButton_1);
@@ -219,12 +313,59 @@ public class AdminMain extends JFrame {
 		textField_6.setBounds(505, 462, 78, 25);
 		books.add(textField_6);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"\uC18C\uC124", "\uC2DC/\uC5D0\uC138\uC774", "\uACBD\uC81C/\uACBD\uC601", "\uC790\uAE30 \uACC4\uBC1C", "\uC778\uBB38", "\uC885\uAD50", "\uACFC\uD559"}));
+		comboBox_1 = new JComboBox();
+		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"\uC18C\uC124", "\uC2DC/\uC5D0\uC138\uC774", "\uACBD\uC81C/\uACBD\uC601", "\uC790\uAE30\uACC4\uBC1C", "\uC778\uBB38", "\uC885\uAD50", "\uACFC\uD559"}));
 		comboBox_1.setBounds(290, 418, 83, 25);
 		books.add(comboBox_1);
 		
 		JButton btnNewButton_2 = new JButton("\uC218\uC815");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BookDAO bookDAO = BookDAO.getInstance();
+				BookDTO bookDTO = new BookDTO();
+
+				bookDTO.setSeq(Integer.parseInt(textField_1.getText()));
+				// 장르
+				bookDTO.setCode((String)comboBox_1.getSelectedItem());
+				//System.out.println((String)comboBox_1.getSelectedItem());
+				bookDTO.setWriter(textField_5.getText());
+				bookDTO.setPublisher(textField_2.getText());// 출판사
+				bookDTO.setBookName(textField_4.getText());
+				bookDTO.setSt(textField_6.getText());// 대여여부
+
+				int result = JOptionPane.showConfirmDialog(null, "정말 수정하시겠습니까?", "도서 수정",
+						JOptionPane.YES_NO_OPTION);
+				if (result == 0) {
+					bookDAO.updatePartsOfBookInfo(bookDTO);
+
+					JOptionPane.showMessageDialog(null, "정보가 수정되었습니다.");
+				}
+				
+				//============================================================새로고침(새로 검색)
+				// DefaultTableModel에 있는 기존 데이터 지우기
+		        for (int i = 0; i < dtm.getRowCount();) {
+		        	dtm.removeRow(0);
+		        }
+		        
+				ArrayList<BookDTO> list = bookDAO.searchElement((String)comboBox.getSelectedItem(), textField.getText().trim());
+				
+				if (list.isEmpty()) {
+					
+				}else {
+					for(BookDTO book : list) {
+						String borrowed = null;
+						if (book.getSt() == null) {
+							borrowed = "";
+						}else {
+							borrowed = "대여중";
+						}
+						
+						Object data[] = { book.getSeq(), book.getBookName(), book.getWriter(), book.getPublisher(), book.getCode(), borrowed};
+						dtm.addRow(data);
+					}
+				}
+			}
+		});
 		btnNewButton_2.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
 		btnNewButton_2.setBounds(614, 419, 78, 67);
 		books.add(btnNewButton_2);
@@ -246,7 +387,44 @@ public class AdminMain extends JFrame {
 		
 		JButton button_1 = new JButton("\uC774\uB984 \uAC80\uC0C9");
 		button_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
+				if (textField_3.getText().trim().equals("")) {
+					JOptionPane.showMessageDialog(
+							null, "검색어를 입력해주세요.", "안내", 
+							JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				for (int i = 0; i < dtm1.getRowCount();) {
+					dtm1.removeRow(0);
+				}
+				
+				String name = textField_3.getText().trim();
+				MemberDAO memberDAO = MemberDAO.getInstance();
+				
+				ArrayList<MemberDTO> list = memberDAO.searchByName(name);				
+				
+				if(list.isEmpty()) {
+					JOptionPane.showMessageDialog(
+						null, "검색 결과가 없습니다.", "안내", 
+						JOptionPane.WARNING_MESSAGE);
+				} else {
+					String gender = null;
+					for(MemberDTO memberDTO : list) {
+						if (memberDTO.getGender() == 0) { 
+							gender = "남";
+						}else{
+							gender = "여";
+						}
+						
+						Object data[] = { 
+							memberDTO.getMemberName(), memberDTO.getMemberId(), 
+							memberDTO.getPw(), gender, memberDTO.getAddress(), 
+							memberDTO.getTel1() + "-" + memberDTO.getTel2() + "-" + memberDTO.getTel3(), memberDTO.getEmail()
+						};
+						dtm1.addRow(data);
+					}
+				}
 			}
 		});
 		button_1.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
@@ -254,6 +432,52 @@ public class AdminMain extends JFrame {
 		members.add(button_1);
 		
 		JButton button_3 = new JButton("\uC0AD\uC81C");
+		button_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int row = table_1.getSelectedRow();
+				int col = table_1.getSelectedColumn();
+				String targetID = (String) table_1.getValueAt(row, 1);
+				
+				DefaultTableModel model2 = (DefaultTableModel) table_1.getModel();
+
+				int result = JOptionPane.showConfirmDialog(null, "정말 삭제하시겠습니까?", "회원 삭제",
+						JOptionPane.YES_NO_OPTION);
+				MemberDAO memberDAO = new MemberDAO();
+				if (result == 0) {
+					memberDAO.deleteByID(targetID);
+					JOptionPane.showMessageDialog(null, "회원 정보를 삭제하였습니다.");
+				}
+				
+				// ============================================================ 테이블 새로고침
+				String nameWhoBorrowed = null;
+				ArrayList<MemberDTO> list = memberDAO.searchByName(textField_3.getText().trim());
+				
+				// DefaultTableModel에 있는 기존 데이터 지우기
+				for (int i = 0; i < dtm1.getRowCount();) {
+					dtm1.removeRow(0);
+				}         
+
+				if(list.isEmpty()) {
+					
+				} else {
+					String gender = null;
+					for(MemberDTO memberDTO : list) {
+						if (memberDTO.getGender() == 0) { 
+							gender = "남";
+						}else{
+							gender = "여";
+						}
+						
+						Object data[] = { 
+							memberDTO.getMemberName(), memberDTO.getMemberId(), 
+							memberDTO.getPw(), gender, memberDTO.getTel1() + "-" + memberDTO.getTel2() + "-" + memberDTO.getTel3(),
+							memberDTO.getAddress(), memberDTO.getEmail()
+						};
+						dtm1.addRow(data);
+					}
+				}
+			}
+		});
 		button_3.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
 		button_3.setBounds(625, 120, 67, 30);
 		members.add(button_3);
@@ -264,16 +488,26 @@ public class AdminMain extends JFrame {
 		scrollPane_1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		table_1 = new JTable();
-		table_1.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"이름", "회원 ID", "회원 PW", "성별", "주소", "연락처", "이메일"
+		dtm1 = new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"이름", "회원 ID", "회원 PW", "성별", "주소", "연락처", "이메일"
+				}
+			){
+			public boolean isCellEditable(int row, int column) {
+				return false;
 			}
-		));
-		table_1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		};
+		table_1.setModel(dtm1);
 		scrollPane_1.setColumnHeaderView(table_1);
 		scrollPane_1.setViewportView(table_1);
+		table_1.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
+		table_1.setAutoCreateRowSorter(true);
+		//table_1.setCellSelectionEnabled(rootPaneCheckingEnabled); //특정셀 클릭
+		table_1.setAutoResizeMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        
+		table_1.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);//열크기 조절
 		table_1.getColumnModel().getColumn(0).setPreferredWidth(80);
 		table_1.getColumnModel().getColumn(1).setPreferredWidth(100);
 		table_1.getColumnModel().getColumn(2).setPreferredWidth(100);
@@ -283,7 +517,89 @@ public class AdminMain extends JFrame {
 		table_1.getColumnModel().getColumn(6).setPreferredWidth(150);
 		table_1.getTableHeader().setReorderingAllowed(false); //테이블 컬럼 순서 변경 금지
 		
+		table_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				table_1 = (JTable)e.getSource();
+				int row = table_1.getSelectedRow();
+				int col = table_1.getSelectedColumn();
+				
+				textField_8.setText((String) table_1.getValueAt(row, 0));
+				textField_7.setText((String) table_1.getValueAt(row, 1));
+				textField_9.setText((String) table_1.getValueAt(row, 2));
+				if (((String) table_1.getValueAt(row, 3)).equals("남")) {
+					rdbtnNewRadioButton.setSelected(true);
+				}else {
+					radioButton.setSelected(true);
+				}
+				textField_10.setText((String) table_1.getValueAt(row, 4));
+				String[] tel = ((String) table_1.getValueAt(row, 5)).split("-");
+				comboBox_2.setSelectedItem(tel[0]);
+				textField_12.setText(tel[1]);
+				textField_13.setText(tel[2]);
+				textField_11.setText((String) table_1.getValueAt(row, 6));
+				
+			}
+		});
+		
 		JButton button_4 = new JButton("\uC218\uC815");
+		button_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MemberDAO memberDAO = MemberDAO.getInstance();
+				MemberDTO memberDTO = new MemberDTO();
+
+				memberDTO.setMemberId(textField_7.getText());
+				memberDTO.setMemberName(textField_8.getText());
+				memberDTO.setPw(textField_9.getText());
+				memberDTO.setAddress(textField_10.getText());
+				if (rdbtnNewRadioButton.isSelected()) {
+					memberDTO.setGender(0);
+				}else {
+					memberDTO.setGender(1);
+				}
+				memberDTO.setEmail(textField_11.getText());
+				memberDTO.setTel1((String)comboBox_2.getSelectedItem());
+				memberDTO.setTel2(textField_12.getText());
+				memberDTO.setTel3(textField_13.getText());
+
+				int result = JOptionPane.showConfirmDialog(null, "정말 수정하시겠습니까?", "회원 수정",
+						JOptionPane.YES_NO_OPTION);
+				if (result == 0) {
+					memberDAO.updatePartsOfMemberInfo(memberDTO);
+
+					JOptionPane.showMessageDialog(null, "정보가 수정되었습니다.");
+				}
+				
+				//============================================================새로고침(새로 검색)
+				for (int i = 0; i < dtm1.getRowCount();) {
+					dtm1.removeRow(0);
+				}
+				
+				String name = textField_3.getText().trim();
+				
+				ArrayList<MemberDTO> list = memberDAO.searchByName(name);				
+				
+				if(list.isEmpty()) {
+					
+				} else {
+					String gender = null;
+					for(MemberDTO member : list) {
+						if (member.getGender() == 0) { 
+							gender = "남";
+						}else{
+							gender = "여";
+						}
+						
+						Object data[] = { 
+								member.getMemberName(), member.getMemberId(), 
+								member.getPw(), gender, member.getAddress(), 
+								member.getTel1() + "-" + member.getTel2() + "-" + member.getTel3(), member.getEmail()
+						};
+						dtm1.addRow(data);
+					}
+				}
+			}
+		});
 		button_4.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
 		button_4.setBounds(614, 419, 78, 67);
 		members.add(button_4);
@@ -328,13 +644,18 @@ public class AdminMain extends JFrame {
 		label_10.setBounds(202, 441, 67, 34);
 		members.add(label_10);
 		
-		JRadioButton rdbtnNewRadioButton = new JRadioButton("\uB0A8");
+		rdbtnNewRadioButton = new JRadioButton("\uB0A8");
+		rdbtnNewRadioButton.setSelected(true);
 		rdbtnNewRadioButton.setBounds(281, 448, 45, 23);
 		members.add(rdbtnNewRadioButton);
 		
-		JRadioButton radioButton = new JRadioButton("\uC5EC");
+		radioButton = new JRadioButton("\uC5EC");
 		radioButton.setBounds(324, 448, 47, 23);
 		members.add(radioButton);
+		
+		ButtonGroup group = new ButtonGroup();
+		group.add(rdbtnNewRadioButton);
+		group.add(radioButton);
 		
 		JLabel lblWnth = new JLabel("\uC8FC\uC18C");
 		lblWnth.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -369,7 +690,7 @@ public class AdminMain extends JFrame {
 		textField_12.setBounds(202, 480, 52, 25);
 		members.add(textField_12);
 		
-		JComboBox comboBox_2 = new JComboBox();
+		comboBox_2 = new JComboBox();
 		comboBox_2.setModel(new DefaultComboBoxModel(new String[] {"010", "011", "017", "019"}));
 		comboBox_2.setBounds(121, 480, 58, 25);
 		members.add(comboBox_2);
@@ -610,7 +931,7 @@ public class AdminMain extends JFrame {
 					BookDAO bookDAO = BookDAO.getInstance();
 					bookDAO.updateBorrowInfo(targetBookSeq, targetID, now, until);
 					
-					// ============================================================ 테이블 새로고침 : 함수로 만들기 복잡해서 중복코드
+					// ============================================================ 테이블 새로고침
 					String nameWhoBorrowed = null;
 					ArrayList<BookDTO> list = bookDAO.searchByName(textField_15.getText().trim());
 					
@@ -915,6 +1236,25 @@ public class AdminMain extends JFrame {
 				new LibraryMain();
 			}
 		});
+		
+		table.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				JTable table = (JTable) e.getSource();
+				int row = table.getSelectedRow();
+				int col = table.getSelectedColumn();
+				String value = "";
+
+				if (e.getButton() == 1) {
+					textField_1.setText("" + table.getValueAt(row, 0));// 도서 번호
+					textField_4.setText("" + table.getValueAt(row, 1));// 도서명
+					textField_5.setText("" + table.getValueAt(row, 2));// 저자
+					textField_2.setText("" + table.getValueAt(row, 3));// 출판사
+					comboBox_1.setSelectedItem("" + table.getValueAt(row, 4));// 장르
+					textField_6.setText("" + table.getValueAt(row, 5));// 대여여부
+				}
+			}
+		});
+		
 	}
 	
 	private void setEnableBorrowB() {

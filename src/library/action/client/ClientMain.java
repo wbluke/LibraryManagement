@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.SystemColor;
@@ -135,8 +136,12 @@ public class ClientMain extends JFrame implements ActionListener {
 		btnNewButton_2 = new JButton("\uB85C\uADF8\uC544\uC6C3");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { // 로그아웃
-				setVisible(false);
-				new LibraryMain();
+				int result = JOptionPane.showConfirmDialog(null, "로그아웃 하시겠습니까?", "로그아웃",
+						JOptionPane.YES_NO_OPTION);
+				if (result == JOptionPane.YES_OPTION) {
+					setVisible(false);
+					new LibraryMain();
+				}
 			}
 		});
 		btnNewButton_2.setFont(new Font("Gulim", Font.PLAIN, 12));

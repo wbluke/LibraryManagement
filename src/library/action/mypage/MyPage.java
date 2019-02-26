@@ -11,10 +11,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import library.action.LibraryMain;
 import library.bean.BookDTO;
 import library.dao.BookDAO;
 import login.bean.MemberDTO;
+import login.dao.MemberDAO;
 
+import javax.swing.AbstractButton;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -46,6 +49,7 @@ public class MyPage extends JFrame {
 	private DefaultTableModel dtm1;
 	private DefaultTableModel dtm;
 	private DefaultTableCellRenderer dtc;
+	private AbstractButton memberDeleteB;
 
 	@SuppressWarnings("serial")
 	public MyPage(MemberDTO memberDTO) {
@@ -62,18 +66,27 @@ public class MyPage extends JFrame {
 		infoChangeB.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
 		infoChangeB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new ChangeInfo(memberDTO);
+				new ChangeInfo(memberDTO).event();
 			}
 		});
 		infoChangeB.setBounds(32, 59, 123, 23);
 		contentPane.add(infoChangeB);
 		
-		JButton memberDeleteB = new JButton("\uD68C\uC6D0 \uD0C8\uD1F4");
+		memberDeleteB = new JButton("\uD68C\uC6D0 \uD0C8\uD1F4");
 		memberDeleteB.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
 		memberDeleteB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String[] option = {"È¸¿ø Å»Åð", "Ãë ¼Ò"};
-				JOptionPane.showOptionDialog(null, "Á¤¸» Å»ÅðÇÏ½Ã°Ú½À´Ï±î?", "È¸¿ø Å»Åð", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, option, "Ãë ¼Ò");
+				int selected = JOptionPane.showOptionDialog(null, "Á¤¸» Å»ÅðÇÏ½Ã°Ú½À´Ï±î?", "È¸¿ø Å»Åð", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, option, "Ãë ¼Ò");
+				if(selected == JOptionPane.YES_OPTION) {
+					String id = memberDTO.getMemberId();
+					MemberDAO memberDAO = MemberDAO.getInstance();
+					memberDAO.memberSecession(id);
+					JOptionPane.showMessageDialog(
+							null, "È¸¿ø Å»Åð Ã³¸®µÇ¾ú½À´Ï´Ù.", "¾È³»", 
+							JOptionPane.WARNING_MESSAGE);
+					System.exit(0);
+				}
 			}
 		});
 		memberDeleteB.setBounds(167, 59, 97, 23);
@@ -424,6 +437,8 @@ public class MyPage extends JFrame {
 	public static void main(String[] args) {
 		BookDAO bookDAO = BookDAO.getInstance();
 		MemberDTO memberDTO = new MemberDTO();
+		memberDTO.setMemberId("ppp");
+		
 		ArrayList<BookDTO> list = bookDAO.searchByName("¾ð");
 		
 		for(BookDTO book : list) {

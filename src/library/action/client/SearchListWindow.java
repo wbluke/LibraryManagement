@@ -139,6 +139,7 @@ public class SearchListWindow extends JFrame implements ListSelectionListener, A
          jtable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
          jtable.setAutoCreateRowSorter(true);
          jtable.setCellSelectionEnabled(rootPaneCheckingEnabled); //특정셀 클릭
+         jtable.setAutoResizeMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
          
          jtable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);//열크기 조절
          jtable.getColumnModel().getColumn(0).setPreferredWidth(5);
@@ -179,30 +180,28 @@ public class SearchListWindow extends JFrame implements ListSelectionListener, A
          });
          
          jtable.addMouseListener(new MouseAdapter() {
-            @Override 
-            public void mouseClicked(MouseEvent e) {
-            
-               JTable t = (JTable)e.getSource();
-               //더블클릭시
-               if(e.getClickCount()==2) {
-                        TableModel m = t.getModel();
-                        Point pt = e.getPoint();
-                        int i = t.rowAtPoint(pt);
-                        if(i>=0) {
-                            int row = t.convertRowIndexToModel(i);
-                            
-                            int bookSeq = (int) m.getValueAt(row,1);
-                            
-                          //DB
-                          BookDAO bookDAO = BookDAO.getInstance();
-                                                                   
-                          //doubleList = bookDAO.doubleCheck(bookSeq);   
-                          
-                          doubleCheckWindow(doubleList);
-                        }
-                }
-            }
-         });
+             @Override public void mouseClicked(MouseEvent e) {
+             JTable t = (JTable)e.getSource();
+                if(e.getClickCount()==2) {  //더블클릭
+                         TableModel m = t.getModel();
+                         Point pt = e.getPoint();
+                         int i = t.rowAtPoint(pt);
+                         if(i>=0) {
+                             int row = t.convertRowIndexToModel(i);
+                             
+                             int bookSeq = (int) m.getValueAt(row,1);
+                             
+                           //DB
+                           BookDAO bookDAO = BookDAO.getInstance();
+                                                                    
+                           BookDTO bookDTO = bookDAO.doubleCheck(bookSeq);   
+                           
+                           new BookInfoWindow(bookDTO);
+                           
+                         }
+                 }
+             }
+          });
          
          cartB.addActionListener(new ActionListener() {
             @Override
@@ -227,6 +226,9 @@ public class SearchListWindow extends JFrame implements ListSelectionListener, A
 	                	}
 	                }
                }
+               JOptionPane.showMessageDialog(
+                       null, "장바구니에 "+bookCountT.getText()+" 권을 담았습니다.", "안내", 
+                       JOptionPane.WARNING_MESSAGE);
             }
          
          });

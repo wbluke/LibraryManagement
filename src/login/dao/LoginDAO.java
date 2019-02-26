@@ -10,7 +10,7 @@ import login.bean.MemberDTO;
 
 public class LoginDAO {
 	private String driver = "oracle.jdbc.driver.OracleDriver";
-	private String url = "jdbc:oracle:thin:@192.168.51.87:1521:xe";
+	private String url = "jdbc:oracle:thin:@localhost:1521:xe";
 	private String user = "java";
 	private String password = "itbank";
 

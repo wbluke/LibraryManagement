@@ -11,16 +11,19 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import login.bean.MemberDTO;
 import login.dao.MemberDAO;
 import login.action.SendEmail;
+import java.awt.Font;
 
 public class JoinMember extends JFrame implements ActionListener {
 	private JLabel idL, pwL1, pwL2, nameL, genderL, telL, hyphenL1, hyphenL2, addrL, emailL, certifiedNumL;
-	private JTextField idT, pwT1, pwT2, nameT, telT1, telT2, addrT, emailT, certifiedNumT;
+	private JTextField idT, nameT, telT1, telT2, addrT, emailT, certifiedNumT;
+	private JPasswordField pwT1, pwT2;
 	private JRadioButton male, female;
 	private JComboBox<String> telCB;
 	private JButton overlapB, CertifiedB, joinB, cancelB, numberconfirmB;
@@ -35,33 +38,42 @@ public class JoinMember extends JFrame implements ActionListener {
 
 		// JLable
 		idL = new JLabel("아 이 디 : ");
+		idL.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		pwL1 = new JLabel("비밀번호 : ");
+		pwL1.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		pwL2 = new JLabel("비밀번호 확인 : ");
+		pwL2.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		nameL = new JLabel("이      름 : ");
+		nameL.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		genderL = new JLabel("성      별 : ");
+		genderL.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		telL = new JLabel("전화번호 : ");
+		telL.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		hyphenL1 = new JLabel("-");
 		hyphenL2 = new JLabel("-");
 		addrL = new JLabel("주      소 : ");
-		emailL = new JLabel("이메일 : ");
+		addrL.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+		emailL = new JLabel("\uC774  \uBA54  \uC77C : ");
+		emailL.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		certifiedNumL = new JLabel("인증번호 : ");
+		certifiedNumL.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 
-		idL.setBounds(20, 30, 80, 20);
-		pwL1.setBounds(20, 70, 80, 20);
-		pwL2.setBounds(20, 110, 90, 20);
-		nameL.setBounds(20, 150, 80, 20);
-		genderL.setBounds(20, 190, 80, 20);
-		telL.setBounds(20, 230, 80, 20);
-		hyphenL1.setBounds(150, 230, 10, 20);
-		hyphenL2.setBounds(220, 230, 10, 20);
-		addrL.setBounds(20, 270, 80, 20);
-		emailL.setBounds(20, 310, 80, 20);
-		certifiedNumL.setBounds(20, 370, 80, 20);
+		idL.setBounds(20, 29, 80, 20);
+		pwL1.setBounds(20, 66, 80, 20);
+		pwL2.setBounds(20, 101, 90, 20);
+		nameL.setBounds(20, 136, 80, 20);
+		genderL.setBounds(20, 168, 80, 20);
+		telL.setBounds(20, 199, 80, 20);
+		hyphenL1.setBounds(170, 200, 10, 20);
+		hyphenL2.setBounds(245, 200, 10, 20);
+		addrL.setBounds(20, 235, 80, 20);
+		emailL.setBounds(20, 270, 80, 20);
+		certifiedNumL.setBounds(20, 353, 80, 20);
 
 		// JTextField
 		idT = new JTextField(8);
-		pwT1 = new JTextField(8);
-		pwT2 = new JTextField(8);
+		pwT1 = new JPasswordField(8);
+		pwT2 = new JPasswordField(8);
 		nameT = new JTextField(8);
 		telT1 = new JTextField(4);
 		telT2 = new JTextField(4);
@@ -69,45 +81,57 @@ public class JoinMember extends JFrame implements ActionListener {
 		emailT = new JTextField(10);
 		certifiedNumT = new JTextField(10);
 
-		idT.setBounds(90, 30, 100, 20);
-		pwT1.setBounds(90, 70, 100, 20);
-		pwT2.setBounds(120, 110, 100, 20);
-		nameT.setBounds(90, 150, 70, 20);
-		telT1.setBounds(165, 230, 40, 20);
-		telT2.setBounds(235, 230, 40, 20);
-		addrT.setBounds(90, 270, 210, 20);
-		emailT.setBounds(90, 310, 190, 20);
-		certifiedNumT.setBounds(90, 370, 80, 20);
+		idT.setBounds(110, 30, 100, 25);
+		pwT1.setBounds(110, 65, 100, 25);
+		pwT2.setBounds(110, 100, 100, 25);
+		nameT.setBounds(110, 135, 100, 25);
+		telT1.setBounds(188, 198, 45, 25);
+		telT2.setBounds(267, 198, 45, 25);
+		addrT.setBounds(110, 234, 202, 25);
+		emailT.setBounds(110, 269, 202, 25);
+		certifiedNumT.setBounds(110, 352, 100, 25);
 
 		// JComboBox
 		telCB = new JComboBox<String>();
 		telCB.setModel(new DefaultComboBoxModel<String>(
 	            new String[] {"010", "011", "017", "019"}));
 
-		telCB.setBounds(90, 230, 50, 20);
+		telCB.setBounds(110, 199, 50, 25);
 
 		// JRadioButton & ButtonGroup
 		ButtonGroup group = new ButtonGroup();
 		male = new JRadioButton("남성", true);
+		male.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		female = new JRadioButton("여성");
+		female.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		group.add(male);
 		group.add(female);
 
-		male.setBounds(90, 190, 60, 20);
-		female.setBounds(150, 190, 60, 20);
+		male.setBounds(110, 166, 60, 25);
+		female.setBounds(170, 166, 60, 25);
 
 		// JButton
 		overlapB = new JButton("중복검사");
+		overlapB.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		CertifiedB = new JButton("인증번호 받기");
+		CertifiedB.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		joinB = new JButton("가입");
+		joinB.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		cancelB = new JButton("취소");
+		cancelB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			}
+		});
+		cancelB.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		numberconfirmB = new JButton("인증 확인");
+		numberconfirmB.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 
-		overlapB.setBounds(210, 30, 90, 20);
-		CertifiedB.setBounds(125, 340, 120, 20);
-		joinB.setBounds(90, 420, 70, 20);
-		cancelB.setBounds(180, 420, 70, 20);
-		numberconfirmB.setBounds(180, 370, 120, 20);
+		overlapB.setBounds(222, 29, 90, 25);
+		CertifiedB.setBounds(110, 304, 202, 25);
+		joinB.setBounds(152, 399, 70, 36);
+		cancelB.setBounds(242, 399, 70, 36);
+		numberconfirmB.setBounds(222, 351, 90, 25);
 
 		// Container
 		Container con = this.getContentPane();
@@ -160,7 +184,7 @@ public class JoinMember extends JFrame implements ActionListener {
 		con.add(joinB);
 		con.add(cancelB);
 
-		setBounds(1100, 200, 350, 500);
+		setBounds(1100, 200, 350, 491);
 		// con.setBackground(new Color(200, 191, 231));
 		setVisible(true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE); // 현재 창 닫는다.
@@ -194,7 +218,16 @@ public class JoinMember extends JFrame implements ActionListener {
 
 		// 인증번호 받기를 눌렀을때
 		else if (e.getSource() == CertifiedB) {
+			if (emailT.getText().equals("")) {
+				JOptionPane.showMessageDialog(null, "이메일을 입력해주세요.");
+				return;
+			}
 			joinCheak2 = false;
+			
+			if(emailT.getText().indexOf("@") == -1) {
+				JOptionPane.showMessageDialog(null, "올바른 이메일을 입력해주세요.");
+				return;
+			}
 			// System.out.println(emailT.getText()); //이메일 받아지는지 확인
 			auth = new SendEmail(emailT.getText(), "도서관 인증번호").getAuth();
 			System.out.println("인증번호 : " + auth);// 인증번호 확인
@@ -214,7 +247,7 @@ public class JoinMember extends JFrame implements ActionListener {
 
 		// 가입을 눌렀을때
 		else if (e.getSource() == joinB) {
-			if (idT.getText().isEmpty() || pwT1.getText().isEmpty() || pwT2.getText().isEmpty()
+			if (idT.getText().isEmpty() || new String(pwT1.getPassword()).isEmpty() || new String(pwT2.getPassword()).isEmpty()
 					|| nameT.getText().isEmpty() || telT1.getText().isEmpty() || telT2.getText().isEmpty()
 					|| addrT.getText().isEmpty() || certifiedNumT.getText().isEmpty()) {
 				JOptionPane.showMessageDialog(null, "빈 공간을 채워주세요.");
@@ -238,10 +271,10 @@ public class JoinMember extends JFrame implements ActionListener {
 
 	private void join() {
 		// 데이터 얻어오기
-		if (pwT1.getText().equals(pwT2.getText())) {
+		if (new String(pwT1.getPassword()).equals(new String(pwT2.getPassword()))) {
 
 			String id = idT.getText();
-			String pw1 = pwT1.getText();
+			String pw1 = new String(pwT1.getPassword());
 			String name = nameT.getText();
 
 			int gender = 0; // 성별
@@ -281,7 +314,22 @@ public class JoinMember extends JFrame implements ActionListener {
 		else {
 			JOptionPane.showMessageDialog(null, "비밀번호와 비밀번호 확인이 맞지 않습니다.");
 		}
-
+		idT.setText("");
+		pwT1.setText("");
+		pwT2.setText("");
+		nameT.setText("");
+		telCB.setSelectedItem("010");
+		telT1.setText("");
+		telT2.setText("");
+		addrT.setText("");
+		emailT.setText("");
+		joinCheak = false;
+		joinCheak2 = false;
+		certifiedNumT.setText("");
+		
+		setVisible(false);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
 	}
 
 	public static void main(String[] args) {

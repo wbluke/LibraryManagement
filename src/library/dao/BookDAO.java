@@ -19,7 +19,7 @@ import login.bean.MemberDTO;
 
 public class BookDAO {
    private String driver = "oracle.jdbc.driver.OracleDriver";
-   private String url = "jdbc:oracle:thin:@192.168.51.87:1521:xe";
+   private String url = "jdbc:oracle:thin:@localhost:1521:xe";
    private String user = "java";
    private String password = "itbank";
    
@@ -183,6 +183,80 @@ public class BookDAO {
 
 
 	   }// search()
+   
+   public ArrayList<BookDTO> searchElement(String fieldName, String value) {
+	   ArrayList<BookDTO> list = new ArrayList<>();
+	      //접속 연결
+	      Connection conn = getConnection();
+	      String sql = null;
+
+	      PreparedStatement pstmt = null;
+	      //ResultSet rs = null;
+	      
+	      switch(fieldName) {
+	      
+	      case "전체" :
+	         sql = "select * from books where code like '%"
+	               +value+"%' or bookname like '%"
+	               +value+ "%' or writer like '%"
+	               +value+"%' or publisher like '%"
+	               +value+"%'";      
+	         break;
+	         
+	      case "도서명" :
+	         sql = "select * from books where bookname like ?";
+	         break;         
+	         
+	      case "저자" :
+	         sql = "select * from books where writer like ?";
+	         break;            
+
+	      case "출판사" :
+	         sql = "select * from books where publisher like ?";
+	         break;      
+	         
+	      case "장르" :
+	         sql = "select * from books where code like ?";
+	         break;   
+	         
+	      }
+	      
+	      try {
+	         pstmt = conn.prepareStatement(sql);
+	         if (fieldName != "전체" ) pstmt.setString(1, "%" + value.trim() + "%");          
+	         rs = pstmt.executeQuery();
+	         
+	         while (rs.next()) {
+	        	 BookDTO bookDTO = new BookDTO();
+				bookDTO.setSeq(rs.getInt("seq"));
+				bookDTO.setImage(rs.getString("image"));
+				bookDTO.setCode(rs.getString("code"));
+				bookDTO.setBookName(rs.getString("bookname"));
+				bookDTO.setWriter(rs.getString("writer"));
+				bookDTO.setPublisher(rs.getString("publisher"));
+				bookDTO.setMemberId(rs.getString("memberid"));
+				bookDTO.setSt(rs.getString("st"));
+				bookDTO.setEn(rs.getString("en"));
+				list.add(bookDTO);
+	        	 
+	         }
+	      } catch (SQLException e) {
+	         System.out.println(e + "=> getUserSearch fail");
+	      } finally {
+	         try {
+	            if (rs != null) rs.close();
+	            if (pstmt != null)
+	               pstmt.close();
+	            if (conn != null)
+	               conn.close();
+	         } catch (SQLException e) {
+	            e.printStackTrace();
+	         }
+	      }
+	      return list;
+
+
+	   }// 관리자 탭 1 검색에 사용 
    
    public ArrayList<BookDTO> cart() {
 	      Connection conn = getConnection();
@@ -372,6 +446,38 @@ public class BookDAO {
          }
       }
    }
+   
+   public void updatePartsOfBookInfo(BookDTO bookDTO) {
+		Connection conn = getConnection();
+		PreparedStatement pstmt = null;
+//     String sql = "update books set bookName=?" + ",image=?" + ",code=?" + ",writer=?" + ",publisher=?"
+//           + ",memberId=?" + ",st=?" + ",en=? where seq=?";
+		// 이미지 값 , en, 장르 지워둠,
+		String sql = "update books set code=?, bookName=?, writer=?, publisher=? where seq=?";
+
+		try {
+			pstmt = conn.prepareStatement(sql);// 생성
+			pstmt.setString(1, bookDTO.getCode());
+			pstmt.setString(2, bookDTO.getBookName());
+			pstmt.setString(3, bookDTO.getWriter());
+			pstmt.setString(4, bookDTO.getPublisher());
+			pstmt.setInt(5, bookDTO.getSeq());
+
+			pstmt.executeUpdate();// 실행
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
    public void delete(int seq) {
       Connection conn = getConnection();
@@ -699,9 +805,77 @@ public class BookDAO {
 		}
 	}
 
-	
+	public void allBook(DefaultTableModel model) {
+		String sql = "select * from books";
+		ResultSet rs = null;
+		Connection conn = getConnection();
+		PreparedStatement pstmt = null;
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				int no = rs.getInt("seq");
+				String bookname = rs.getString("bookname");
+				String writer = rs.getString("writer");
+				String publisher = rs.getString("publisher");
+				String code = rs.getString("code");
+				String st = rs.getString("st");
+
+				// Object data[] = {code, bookname, writer, publisher, memberId, st};
+				model.addRow(new Object[] { no, bookname, writer, publisher, code, st });
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
 
-	
+   public BookDTO doubleCheck(int bookSeq) {
+	      BookDTO bookDTO = new BookDTO();      
+	      
+	      Connection conn = getConnection();
+	      PreparedStatement pstmt = null;
+	      
+	      String sql = "select * from books where seq =?";
+	      try {
+	         pstmt = conn.prepareStatement(sql);
+	         pstmt.setInt(1, bookSeq);
+	         rs = pstmt.executeQuery();
+	         
+
+	         while (rs.next()) {
+	   
+	            bookDTO.setSeq(rs.getInt("seq"));
+	            bookDTO.setImage(rs.getString("image"));
+	            bookDTO.setCode(rs.getString("code"));
+	            bookDTO.setWriter(rs.getString("writer"));
+	            bookDTO.setBookName(rs.getString("bookName"));
+	            bookDTO.setMemberId(rs.getString("memberId"));
+	            bookDTO.setPublisher(rs.getString("publisher"));
+	            bookDTO.setSt(rs.getString("st"));
+	            bookDTO.setEn(rs.getString("en"));
+//		            System.out.println("cartList에 담기");
+	            
+
+	         } // while   
+	         
+	         
+	      } catch (SQLException e) {
+	         e.printStackTrace();
+	      }
+	      
+	      return bookDTO;   
+	   }   
 
 }

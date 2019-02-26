@@ -110,6 +110,10 @@ public class AdminInsert extends JFrame implements ActionListener {
       fileOpenB.setBounds(554, 151, 53, 34);
 
       enrollB = new JButton("등   록");
+      enrollB.addActionListener(new ActionListener() {
+      	public void actionPerformed(ActionEvent e) {
+      	}
+      });
       cancelB = new JButton("취   소");
       
       enrollB.setFont(new Font("굴림", Font.BOLD, 15));
@@ -181,48 +185,61 @@ public class AdminInsert extends JFrame implements ActionListener {
           enroll();
       }
       
-      else if (e.getSource() == cancelB) cancel();
+      else if (e.getSource() == cancelB) {
+    	  //setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    	  setVisible(false);
+      }
       
    }
-   private void cancel() {
-      
-   }
-
+   
    private void enroll() {
-      //데이터
-      String image = imagePathT.getText();
-      String code = comboBox.getSelectedItem().toString();  
-      String writer = writerT.getText();
-      String publisher = publisherT.getText();
-      String bookname = bookNameT.getText();
-      
-      BookDTO bookDTO = new BookDTO();
-      bookDTO.setImage(image);
-      bookDTO.setCode(code);
-      bookDTO.setWriter(writer);
-      bookDTO.setPublisher(publisher);
-      bookDTO.setBookName(bookname);
+	      //데이터
+	      String image = imagePathT.getText();
+	      String code = comboBox.getSelectedItem().toString();  
+	      String writer = writerT.getText();
+	      String publisher = publisherT.getText();
+	      String bookname = bookNameT.getText();
 
-      
-      //DB
-      BookDAO bookDAO = BookDAO.getInstance();
-      int seq = bookDAO.getSeq();
+	      if(imagePathT.getText().trim().equals("") || bookNameT.getText().trim().equals("") ||
+	         writerT.getText().trim().equals("")   || publisherT.getText().trim().equals("")){         
+	         JOptionPane.showMessageDialog(
+	         null, "도서 추가시, \n해당 항목을 모두 입력해주세요.", "안내", 
+	         JOptionPane.WARNING_MESSAGE);   
+	      }
 
-      bookDTO.setSeq(seq);
-      
-      bookDAO.insert(bookDTO);
-      
-      erase();//초기화
+	      else {
+	         BookDTO bookDTO = new BookDTO();
+	         bookDTO.setImage(image);
+	         bookDTO.setCode(code);
+	         bookDTO.setWriter(writer);
+	         bookDTO.setPublisher(publisher);
+	         bookDTO.setBookName(bookname);
+	         
+	         //DB
+	         BookDAO bookDAO = BookDAO.getInstance();
+	         int seq = bookDAO.getSeq();
 
-      //응답
-      System.out.println("데이터를 등록하였습니다"); 
-   //   model.addElement(bookDTO);//JList에 추가
-   }
+	         bookDTO.setSeq(seq);
+	         
+	         bookDAO.insert(bookDTO);
+	         
+	         //응답
+	         JOptionPane.showMessageDialog(
+	                  null, "입력하신 책 정보가 등록되었습니다.", "안내", 
+	                  JOptionPane.WARNING_MESSAGE);
+	         //System.out.println("데이터를 등록하였습니다"); 
+	      }
+	      erase();//초기화
+	   }
 
    private void erase() {
-      
-      
-   }
+	      imagePathT.setText("");
+	      comboBox.setSelectedItem("소설");
+	      bookNameT.setText(""); 
+	      writerT.setText(""); 
+	      publisherT.setText("");
+	   }
+   
    public static void main(String[] args) {
       new AdminInsert().event();
       

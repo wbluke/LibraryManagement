@@ -12,7 +12,7 @@ import login.bean.MemberDTO;
 
 public class MemberDAO {
 	private String driver = "oracle.jdbc.driver.OracleDriver";
-	private String url = "jdbc:oracle:thin:@192.168.51.87:1521:xe";
+	private String url = "jdbc:oracle:thin:@localhost:1521:xe";
 	private String user = "java";
 	private String password = "itbank";
 	private static MemberDAO instance;
@@ -269,4 +269,120 @@ public class MemberDAO {
 		return list;
 	}   
 
+	
+	public void update(MemberDTO memberDTO) {
+		Connection conn = getConnection();
+		PreparedStatement pstmt = null;
+		String sql = "update members set pw=?" + ",tel1=?" + ",tel2=?" + ",tel3=?" + ",address=?"
+				+ ",email=?"+ " where memberid=?";
+
+		try {
+			pstmt = conn.prepareStatement(sql);// 积己
+			pstmt.setString(1, memberDTO.getPw());
+			pstmt.setString(2, memberDTO.getTel1());
+			pstmt.setString(3, memberDTO.getTel2());
+			pstmt.setString(4, memberDTO.getTel3());
+			pstmt.setString(5, memberDTO.getAddress());
+			pstmt.setString(6, memberDTO.getEmail());
+			pstmt.setString(7, memberDTO.getMemberId());
+
+			pstmt.executeUpdate();// 角青
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void deleteByID(String targetID) {
+		Connection conn = getConnection();
+		PreparedStatement pstmt = null;
+		String sql = "delete members where memberID=?";
+
+		try {
+			pstmt = conn.prepareStatement(sql);// 积己
+			pstmt.setString(1, targetID);
+
+			pstmt.executeUpdate();// 角青
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+	public void updatePartsOfMemberInfo(MemberDTO memberDTO) {
+		Connection conn = getConnection();
+		PreparedStatement pstmt = null;
+		String sql = "update members set membername=?, pw=?, gender=?, address=?, tel1=?, tel2=?, tel3=?, email=? where memberid=?";
+
+		try {
+			pstmt = conn.prepareStatement(sql);// 积己
+			pstmt.setString(1, memberDTO.getMemberName());
+			pstmt.setString(2, memberDTO.getPw());
+			pstmt.setInt(3, memberDTO.getGender());
+			pstmt.setString(4, memberDTO.getAddress());
+			pstmt.setString(5, memberDTO.getTel1());
+			pstmt.setString(6, memberDTO.getTel2());
+			pstmt.setString(7, memberDTO.getTel3());
+			pstmt.setString(8, memberDTO.getEmail());
+			pstmt.setString(9, memberDTO.getMemberId());
+			
+			pstmt.executeUpdate();// 角青
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public void memberSecession(String id) {
+		Connection conn = getConnection();
+		PreparedStatement pstmt = null;
+		String sql = "DELETE FROM members WHERE memberId=?";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			pstmt.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

@@ -1,5 +1,7 @@
 package library.bean;
 
+import java.util.ArrayList;
+
 public class BookDTO {
    private int seq;
    private String image;
@@ -10,6 +12,15 @@ public class BookDTO {
    private String memberId;
    private String st;
    private String en;
+   private ArrayList<BookDTO> doubleListdoubleList;
+   
+   public ArrayList <BookDTO> getDoubleListdoubleList() {
+	      return doubleListdoubleList;
+   }
+   
+   public void setDoubleListdoubleList(ArrayList <BookDTO> doubleListdoubleList) {
+	   this.doubleListdoubleList = doubleListdoubleList;
+   }
    
    public int getSeq() {
       return seq;
