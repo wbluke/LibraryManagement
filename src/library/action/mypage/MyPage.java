@@ -105,7 +105,7 @@ public class MyPage extends JFrame {
       infoChangeB.setFont(new Font("맑은 고딕", Font.BOLD, 12));
       infoChangeB.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-            new ChangeInfo(memberDTO).event();
+            new ChangeInfo(memberDTO);
          }
       });
       infoChangeB.setBounds(81, 87, 120, 35);
@@ -153,6 +153,11 @@ public class MyPage extends JFrame {
             String[] option = {"전부 대여", "취 소"};
             int selected = JOptionPane.showOptionDialog(null, "장바구니의 모든 항목을 대여하시겠습니까?", "전부 대여", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, option, "취 소");
             if (selected == JOptionPane.YES_OPTION) {
+            	if (memberDTO.getOverdue() >= 3) {
+            		JOptionPane.showMessageDialog(null, "해당 회원님은 연체 횟수가 많아 도서 대여가 불가합니다.\n관리자에게 문의하세요.");
+            		return;
+            	}
+            	
                ArrayList<Integer> seqList = new ArrayList<>();
                for(BookDTO book : memberDTO.getBookCart()) {
                   seqList.add(book.getSeq());
@@ -222,6 +227,12 @@ public class MyPage extends JFrame {
             String[] option = {"선택 대여", "취 소"};
             int selected = JOptionPane.showOptionDialog(null, "선택한 장바구니의 항목들을 대여하시겠습니까?", "선택 대여", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, option, "취 소");
             if (selected == JOptionPane.YES_OPTION) {
+            	if (memberDTO.getOverdue() >= 3) {
+            		JOptionPane.showMessageDialog(null, "해당 회원님은 연체 횟수가 많아 도서 대여가 불가합니다.\n관리자에게 문의하세요.");
+            		return;
+            	}
+            	
+            	
                BookDAO bookDAO = BookDAO.getInstance();
                
                
@@ -236,6 +247,11 @@ public class MyPage extends JFrame {
                         nameList.add(cartName);                  
                      }
                   }
+               
+               if (nameList.isEmpty()) {
+            	   JOptionPane.showMessageDialog(null, "선택된 도서가 없습니다.");
+            	   return;
+               }
                
                // 현재 sysDate를 String으로 바꿔서 반납 날짜까지 계산해서 넣기
                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -297,6 +313,10 @@ public class MyPage extends JFrame {
                         nameList.add(cartName);                  
                      }
                   }
+               if (nameList.isEmpty()) {
+            	   JOptionPane.showMessageDialog(null, "선택된 도서가 없습니다.");
+            	   return;
+               }
                
                JOptionPane.showMessageDialog(
                      null, "선택된 도서가 장바구니에서 취소되었습니다.", "안내", 
@@ -430,11 +450,8 @@ public class MyPage extends JFrame {
          selectDeleteB.setEnabled(false);
       }
       
-      this.addWindowListener(new WindowAdapter(){
-         public void   windowClosing(WindowEvent e){
-            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-         }
-      });
+      setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+      
    }
 
 

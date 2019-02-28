@@ -155,6 +155,14 @@ public class AdminMain extends JFrame {
             JButton btnNewButton = new JButton("검색");
             btnNewButton.addActionListener(new ActionListener() {
                public void actionPerformed(ActionEvent e) {
+            	   textField_1.setText("");
+                   // 장르
+                   comboBox_1.setSelectedItem("소설");
+                   textField_5.setText("");
+                   textField_2.setText("");// 출판사
+                   textField_4.setText("");
+                   textField_6.setText("");// 대여여부
+                   
                   if (textField.getText().trim().equals("")) {
                      JOptionPane.showMessageDialog(null, "검색어를 입력해주세요.");
                      return;
@@ -418,6 +426,14 @@ public class AdminMain extends JFrame {
                     JButton button_11 = new JButton("전체 도서 보기");
                     button_11.addActionListener(new ActionListener() {
                        public void actionPerformed(ActionEvent e) {
+                    	   textField_1.setText("");
+                           // 장르
+                           comboBox_1.setSelectedItem("소설");
+                           textField_5.setText("");
+                           textField_2.setText("");// 출판사
+                           textField_4.setText("");
+                           textField_6.setText("");// 대여여부
+                           
                           // DefaultTableModel에 있는 기존 데이터 지우기
                           for (int i = 0; i < dtm.getRowCount();) {
                              dtm.removeRow(0);
@@ -484,6 +500,16 @@ public class AdminMain extends JFrame {
             JButton button_1 = new JButton("이름 검색");
             button_1.addActionListener(new ActionListener() {
                public void actionPerformed(ActionEvent e) {
+            	   textField_7.setText("");
+                   textField_8.setText("");
+                   textField_9.setText("");
+                   textField_10.setText("");
+                   rdbtnNewRadioButton.setSelected(true);
+                   textField_11.setText("");
+                   comboBox_2.setSelectedItem("010");
+                   textField_12.setText("");
+                   textField_13.setText("");
+                   
                   if (textField_3.getText().trim().equals("")) {
                      JOptionPane.showMessageDialog(
                            null, "검색어를 입력해주세요.", "안내", 
@@ -806,6 +832,16 @@ public class AdminMain extends JFrame {
       JButton button_12 = new JButton("전체 회원 보기");
       button_12.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
+        	 textField_7.setText("");
+             textField_8.setText("");
+             textField_9.setText("");
+             textField_10.setText("");
+             rdbtnNewRadioButton.setSelected(true);
+             textField_11.setText("");
+             comboBox_2.setSelectedItem("010");
+             textField_12.setText("");
+             textField_13.setText("");
+             
             MemberDAO memberDAO = MemberDAO.getInstance();
             ArrayList<MemberDTO> list = memberDAO.searchAllMembers();
             
@@ -870,6 +906,9 @@ public class AdminMain extends JFrame {
       JButton btnNewButton_3 = new JButton("이름 검색");
       btnNewButton_3.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
+        	 table_2Checked = -1;
+        	 button_5.setEnabled(false);
+        	 
             if (textField_14.getText().trim().equals("")) {
                JOptionPane.showMessageDialog(
                      null, "검색어를 입력해주세요.", "안내", 
@@ -989,6 +1028,10 @@ public class AdminMain extends JFrame {
       JButton button_2 = new JButton("\uB3C4\uC11C\uBA85 \uAC80\uC0C9");
       button_2.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
+        	 table_3Checked = -1;
+        	 button_5.setEnabled(false);
+        	 button_7.setEnabled(false);
+        	 
             if (textField_15.getText().trim().equals("")) {
                JOptionPane.showMessageDialog(
                      null, "검색어를 입력해주세요.", "안내", 
@@ -1032,6 +1075,11 @@ public class AdminMain extends JFrame {
       button_5 = new JButton("\uB300\uC5EC\uD558\uAE30");
       button_5.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
+        	 if (table_2Checked == -1 || table_3Checked == -1) {
+        		 JOptionPane.showMessageDialog(null, "해당 정보를 선택해주세요.");
+        		 return;
+        	 }
+        	 
             int result = JOptionPane.showConfirmDialog(null, "대여하시겠습니까?", "대여 확인", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                // table_2 에서 memberID 가져오기
@@ -1106,6 +1154,10 @@ public class AdminMain extends JFrame {
       JButton button_6 = new JButton("\uC9C0\uC6B0\uAE30");
       button_6.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
+        	 table_3Checked = -1;
+        	 button_5.setEnabled(false);
+        	 button_7.setEnabled(false);
+        	 
             // DefaultTableModel에 있는 기존 데이터 지우기
             for (int i = 0; i < dtm3.getRowCount();) {
                dtm3.removeRow(0);
@@ -1119,6 +1171,11 @@ public class AdminMain extends JFrame {
       button_7 = new JButton("\uBC18\uB0A9\uD558\uAE30");
       button_7.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
+        	 if (table_2Checked == -1 || table_3Checked == -1) {
+        		 JOptionPane.showMessageDialog(null, "해당 정보를 선택해주세요.");
+        		 return;
+        	 }
+        	 
             int result = JOptionPane.showConfirmDialog(null, "반납하시겠습니까?", "반납 확인", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                

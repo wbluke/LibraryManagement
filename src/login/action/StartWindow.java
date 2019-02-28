@@ -202,7 +202,7 @@ public class StartWindow extends JFrame implements ActionListener, ItemListener 
 			}
 				
 		} else if (e.getSource() == joinB) { 
-			new JoinMember().event();
+			new JoinMember();
 				
 		} else if (e.getSource() == idB) {
 			new FindID();
