@@ -1,11 +1,13 @@
 package library.action.admin;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import login.action.SendEmail;
@@ -17,6 +19,7 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -30,7 +33,7 @@ public class SendEmailToBlack extends JFrame {
 	private JTextArea textArea_1;
 
 	public SendEmailToBlack(MemberDTO target) {
-		setTitle("\uC774\uBA54\uC77C \uC804\uC1A1");
+		setTitle("ÀÌ¸ÞÀÏ Àü¼Û");
 		
 		this.target = target;
 		
@@ -39,32 +42,32 @@ public class SendEmailToBlack extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel label_1 = new JLabel("\uC544\uC774\uB514 : " + target.getMemberId());
+		JLabel label_1 = new JLabel("¾Æ   ÀÌ   µð : "+ target.getMemberId());
 		label_1.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 14));
 		label_1.setBounds(12, 10, 302, 20);
 		contentPane.add(label_1);
 		
-		JLabel label_2 = new JLabel("\uC774   \uB984 : " + target.getMemberName());
+		JLabel label_2 = new JLabel("ÀÌ         ¸§ : "+ target.getMemberName());
 		label_2.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 14));
 		label_2.setBounds(12, 40, 302, 20);
 		contentPane.add(label_2);
 		
-		JLabel label_3 = new JLabel("\uC774\uBA54\uC77C : " + target.getEmail());
+		JLabel label_3 = new JLabel("ÀÌ   ¸Þ   ÀÏ : "+ target.getEmail());
 		label_3.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 14));
 		label_3.setBounds(12, 70, 302, 20);
 		contentPane.add(label_3);
 		
-		JLabel label = new JLabel("\uC81C \uBAA9");
+		JLabel label = new JLabel("Á¦ ¸ñ");
 		label.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 14));
 		label.setBounds(12, 107, 302, 20);
 		contentPane.add(label);
 		
-		JLabel label_4 = new JLabel("\uB0B4 \uC6A9");
+		JLabel label_4 = new JLabel("³» ¿ë");
 		label_4.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 14));
 		label_4.setBounds(12, 179, 302, 20);
 		contentPane.add(label_4);
 		
-		JButton btnNewButton = new JButton("\uC804 \uC1A1");
+		JButton btnNewButton = new JButton("Àü ¼Û");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new SendEmail(target.getEmail(), textArea.getText(), textArea_1.getText());
@@ -79,14 +82,26 @@ public class SendEmailToBlack extends JFrame {
 		
 		textArea = new JTextArea();
 		textArea.setBounds(12, 137, 316, 32);
+		
+		//textArea °æ°è ¹× ¿©¹é ¼³Á¤ÇÏ¿© ºÙÀÓ
+		Border lineBorder = BorderFactory.createLineBorder(Color.black, 1);
+		Border emptyBorder = BorderFactory.createEmptyBorder(7, 7, 7, 7);
+		textArea.setBorder(BorderFactory.createCompoundBorder(lineBorder, emptyBorder));		
 		contentPane.add(textArea);
 		
+	
 		textArea_1 = new JTextArea();
-		textArea_1.setBounds(12, 209, 316, 204);
-		contentPane.add(textArea_1);
+        JScrollPane scrollPane = new JScrollPane(textArea_1);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        scrollPane.setBounds(12, 209, 316, 204);
+		contentPane.add(scrollPane);
 		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		contentPane.setBackground(new Color(255, 255, 240));
+		
 		setBounds(400, 200, 356, 508);
+		setResizable(false);
 		setVisible(true);
 	}
 

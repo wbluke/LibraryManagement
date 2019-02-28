@@ -6,6 +6,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Image;
+
 import javax.swing.JTextField;
 
 import library.action.LibraryMain;
@@ -17,6 +19,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -46,9 +49,22 @@ public class AdminInsert extends JFrame implements ActionListener {
       setContentPane(jp);
       getContentPane().setLayout(null);
       
-      markP = new JPanel(); //도서관마크 삽입부분
-      markP.setBackground(new Color(123, 104, 238));
-      markP.setBounds(68, 37, 75, 75);
+      
+      JLabel lblNewLabel_5 = new JLabel();
+      String imagePath2 ="libMark.png";
+		
+      ImageIcon originIcon2 = new ImageIcon(imagePath2);
+	  Image originImg2 = originIcon2.getImage();
+
+	 
+	  //이미지로 변환
+	  Image changedImg2 = originImg2.getScaledInstance(100,100,Image.SCALE_SMOOTH);
+	  ImageIcon Icon2 = new ImageIcon(changedImg2);
+
+	  lblNewLabel_5.setIcon(Icon2);
+		
+	  lblNewLabel_5.setBounds(60, 20, 100, 100);
+	  jp.add(lblNewLabel_5);      
 
       bookImagL = new JLabel("도서이미지");
       bookCategoryL = new JLabel("장르");      
@@ -123,7 +139,6 @@ public class AdminInsert extends JFrame implements ActionListener {
       cancelB.setBounds(418, 395, 144, 41);
       jp.setLayout(null);
 
-      getContentPane().add(markP);
       
       getContentPane().add(bookImagL);
       getContentPane().add(bookCategoryL);   
@@ -147,6 +162,8 @@ public class AdminInsert extends JFrame implements ActionListener {
       lblNewLabel.setBounds(438, 37, 144, 41);
       jp.add(lblNewLabel);
       //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      
+      setResizable(false);
       setVisible(true);
       
       this.addWindowListener(new WindowAdapter(){

@@ -14,17 +14,23 @@ import login.bean.MemberDTO;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -50,105 +56,106 @@ public class ClientMain extends JFrame implements ActionListener {
 	private MemberDTO memberDTO;
 	private Image img;
 	private JLabel mapLabel;
+	private JLabel lblNewLabel_4;
+	private JLabel lblNewLabel_5;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		MemberDTO memberDTO = new MemberDTO();
-		memberDTO.setMemberName("아무개");
-		new ClientMain(memberDTO);
-	}
-
-	/**
-	 * Create the frame.
-	 */
 	public ClientMain(MemberDTO memberDTO) {
 		this.memberDTO = memberDTO;
 		
 		contentPane = new JPanel();
+		contentPane.setBackground(new Color(255, 255, 240));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+//		setBounds(400, 200, 878, 640);
+		
+		setSize(1100,800);
+		Dimension frameSize = this.getSize(); // 프레임 사이즈
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // 모니터 사이즈	
+		this.setLocation((screenSize.width - frameSize.width)/2, 
+				(screenSize.height - frameSize.height)/2); // 화면 중앙
 		
 		panel_1 = new JPanel();
-		panel_1.setBounds(96, 74, 662, 39);
+		panel_1.setBounds(41, 117, 999, 45);
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
 		
 		comboBox = new JComboBox<String>();
 		comboBox.setModel(new DefaultComboBoxModel<String>(
 	            new String[] {"전체", "도서명", "저자", "출판사", "장르"}));
-		comboBox.setBounds(0, 0, 64, 39);
+		comboBox.setBounds(0, 0, 105, 45);
 		panel_1.add(comboBox);
 		
 		textField = new JTextField();
-		textField.setBounds(63, 0, 516, 39);
+		textField.setFont(new Font("굴림", Font.BOLD, 15));
+		textField.setBounds(103, 0, 814, 45);
 		panel_1.add(textField);
 		textField.setColumns(10);
 		
-		btnNewButton = new JButton("\uAC80 \uC0C9");
+		btnNewButton = new JButton("검색");
+		btnNewButton.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+		btnNewButton.setBounds(914, 0, 85, 45);
+		panel_1.add(btnNewButton);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new SearchListWindow(memberDTO, comboBox.getSelectedItem().toString(), textField.getText());
 			}
 		});
-		btnNewButton.setBounds(577, 0, 85, 39);
-		panel_1.add(btnNewButton);
 		
-		panel = new JPanel();
-		panel.setBackground(Color.LIGHT_GRAY);
-		panel.setBounds(41, 59, 779, 393);
-		contentPane.add(panel);
+		lblNewLabel_4 = new JLabel("");
+	    String imagePath ="mainLibImage.jpg";
+		ImageIcon originIcon = new ImageIcon(imagePath);
+	    Image originImg = originIcon.getImage();
+
+	 
+	    //이미지로 변환
+	    Image changedImg = originImg.getScaledInstance(1000,540,Image.SCALE_SMOOTH);
+	    ImageIcon Icon = new ImageIcon(changedImg);
+
+	    lblNewLabel_4.setIcon(Icon);
 		
-		panel_2 = new JPanel();
-		panel_2.setBackground(SystemColor.activeCaption);
-		panel_2.setBounds(41, 463, 157, 115);
-		contentPane.add(panel_2);
+		lblNewLabel_4.setBounds(40, 88, 1000, 514);
+		contentPane.add(lblNewLabel_4);
 		
 		libraryInfoP = new JPanel();
-		libraryInfoP.setBounds(210, 474, 386, 104);
+		libraryInfoP.setBackground(new Color(255, 255, 240));
+		libraryInfoP.setBounds(272, 644, 442, 101);
 		contentPane.add(libraryInfoP);
 		libraryInfoP.setLayout(null);
 		
-		lblNewLabel_1 = new JLabel("\uC11C\uC6B8\uD2B9\uBCC4\uC2DC \uC885\uB85C\uAD6C \uB3C8\uD654\uBB38\uB85C 26 \uB2E8\uC131\uC0AC");
-		lblNewLabel_1.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-		lblNewLabel_1.setBounds(0, 0, 386, 26);
-		libraryInfoP.add(lblNewLabel_1);
-		
-		label_1 = new JLabel("\uC774\uC6A9\uC2DC\uAC04 : \uC6D4~\uAE08 08 : 30 ~ 16 : 30 / \uD1A0, \uC77C, \uACF5\uD734\uC77C \uC26C\uB294\uB0A0");
-		label_1.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-		label_1.setBounds(0, 24, 386, 26);
+		label_1 = new JLabel("이용시간 : 월~금 08 : 30 ~ 16 : 30 / 토, 일, 공휴일 쉬는날");
+		label_1.setBounds(0, 25, 386, 26);
 		libraryInfoP.add(label_1);
 		
 		lblTel = new JLabel("TEL : 02 - 1234 - 1234 ~ 9");
-		lblTel.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		lblTel.setBounds(0, 48, 386, 26);
 		libraryInfoP.add(lblTel);
 		
-		JLabel label = new JLabel("\uC6B0\uCE21 \uC9C0\uB3C4\uB97C \uB354\uBE14\uD074\uB9AD\uD558\uC2DC\uBA74 \uB3C4\uC11C\uAD00 \uC0C1\uC138 \uC815\uBCF4\uB97C \uBCF4\uC2E4 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
+		
+		
+		JLabel label = new JLabel("\u203B \uC6B0\uCE21 \uC9C0\uB3C4\uB97C \uB354\uBE14\uD074\uB9AD\uD558\uC2DC\uBA74 \uB3C4\uC11C\uAD00 \uC0C1\uC138 \uC815\uBCF4\uB97C \uBCF4\uC2E4 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
 		label.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		label.setBounds(0, 72, 386, 26);
 		libraryInfoP.add(label);
 		
-		//panel_3 = new JPanel(); //도서관위치_최종.png
+/*		//panel_3 = new JPanel(); //도서관위치_최종.png
 		File f = new File("도서관위치_최종.png");
 
 		System.out.println(f.exists()); // 파일이 있는지 확인용 true/false
 		Toolkit tk = Toolkit.getDefaultToolkit();
-		img = tk.getImage("c:/work/pack/pack1.jpg");
+		img = tk.getImage("c:/work/pack/pack1.jpg");*/
 		
-		btnNewButton_1 = new JButton("\uB9C8\uC774\uD398\uC774\uC9C0");
+		btnNewButton_1 = new JButton("마이페이지");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new MyPage(memberDTO);
 			}
 		});
-		btnNewButton_1.setFont(new Font("굴림", Font.PLAIN, 12));
-		btnNewButton_1.setBounds(723, 26, 97, 23);
+		btnNewButton_1.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+		btnNewButton_1.setBounds(943, 33, 97, 45);
 		contentPane.add(btnNewButton_1);
 		
-		btnNewButton_2 = new JButton("\uB85C\uADF8\uC544\uC6C3");
+		btnNewButton_2 = new JButton("로그아웃");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { // 로그아웃
 				int result = JOptionPane.showConfirmDialog(null, "로그아웃 하시겠습니까?", "로그아웃",
@@ -159,22 +166,41 @@ public class ClientMain extends JFrame implements ActionListener {
 				}
 			}
 		});
-		btnNewButton_2.setFont(new Font("Gulim", Font.PLAIN, 12));
-		btnNewButton_2.setBounds(614, 26, 97, 23);
+		btnNewButton_2.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+		btnNewButton_2.setBounds(823, 33, 97, 45);
 		contentPane.add(btnNewButton_2);
 		
-		lblNewLabel = new JLabel(memberDTO.getMemberName() + "\uB2D8 \uB3C4\uC11C\uAD00 \uBC29\uBB38\uC744 \uD658\uC601\uD569\uB2C8\uB2E4!");
+		lblNewLabel = new JLabel(memberDTO.getMemberName() + "님 도서관 방문을 환영합니다!");
 		lblNewLabel.setFont(new Font("맑은 고딕", Font.BOLD, 12));
-		lblNewLabel.setBounds(41, 34, 246, 15);
+		lblNewLabel.setBounds(41, 48, 246, 15);
 		contentPane.add(lblNewLabel);
 		
-		mapLabel = new JLabel("New label");
-		mapLabel.setBounds(608, 462, 211, 115);
-		contentPane.add(mapLabel);
+		JLabel lblNewLabel_2 = new JLabel();
+		lblNewLabel_2.setIcon(new ImageIcon("libMark.png"));
+		lblNewLabel_2.setBounds(41, 625, 210, 120);
+		contentPane.add(lblNewLabel_2);
 	    
+		lblNewLabel_5 = new JLabel("");
+	    String imagePath2 ="libMap.png";
+		ImageIcon originIcon2 = new ImageIcon(imagePath2);
+	    Image originImg2 = originIcon2.getImage();
+
+	 
+	    //이미지로 변환
+	    Image changedImg2 = originImg2.getScaledInstance(220,120,Image.SCALE_SMOOTH);
+	    ImageIcon Icon2 = new ImageIcon(changedImg2);
+
+	    lblNewLabel_5.setIcon(Icon2);
+		
+	    lblNewLabel_5.setBounds(820, 626, 220, 120);
+		contentPane.add(lblNewLabel_5);
+		
+		lblNewLabel_1 = new JLabel("서울특별시 종로구 돈화문로 26 단성사");
+		lblNewLabel_1.setBounds(0, 0, 386, 26);
+		libraryInfoP.add(lblNewLabel_1);
 		
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(400, 200, 878, 640);
+		setResizable(false);
 		setVisible(true);
 		
 		this.addWindowListener(new WindowAdapter(){
@@ -182,6 +208,7 @@ public class ClientMain extends JFrame implements ActionListener {
 				new LibraryMain();
 			}
 		});
+		lblNewLabel_5.addMouseListener(new MyMouseListener());
 		
 	}
 
@@ -190,4 +217,19 @@ public class ClientMain extends JFrame implements ActionListener {
 		
 		
 	}
+	
+	public static void main(String[] args) {
+		MemberDTO memberDTO = new MemberDTO();
+		memberDTO.setMemberName("아무개");
+		new ClientMain(memberDTO);
+	}
+}
+class MyMouseListener extends MouseAdapter {
+	  public void mouseClicked(MouseEvent evt) {
+	    if (evt.getClickCount() ==2) {
+	    	new LibMap();	
+	    	System.out.println("double-click");
+	    } 
+	  }
+	
 }

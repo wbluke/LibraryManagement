@@ -31,13 +31,15 @@ public class BookInfoWindow extends JFrame {
       //panel 생성
       jp = new JPanel();
       panel2 = new JPanel(); // 정보 panel
-      setBounds(100, 100, 450, 540);   
+      setBounds(1000, 150, 450, 540);   
+      jp.setBackground(Color.WHITE);
 
       jp.setBorder(new EmptyBorder(5, 5, 5, 5));
       jp.setLayout(null);
       getContentPane().add(jp);
       jp.add(panel2);
       panel2.setBounds(48,333,335,142);
+      panel2.setBackground(Color.WHITE);  
       panel2.setLayout(null);
       
       JLabel lblNewLabel = new JLabel("도  서  명 :");
@@ -124,6 +126,7 @@ public class BookInfoWindow extends JFrame {
            }
        }; // 정보 panel
       setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+      setResizable(false);
       setVisible(true);
    }   
    public static void main(String[] args) {

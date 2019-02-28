@@ -1,6 +1,8 @@
 package login.action;
 
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -19,6 +21,9 @@ import login.bean.MemberDTO;
 import login.dao.MemberDAO;
 import login.action.SendEmail;
 import java.awt.Font;
+import java.awt.Toolkit;
+
+import javax.swing.SwingConstants;
 
 public class JoinMember extends JFrame implements ActionListener {
 	private JLabel idL, pwL1, pwL2, nameL, genderL, telL, hyphenL1, hyphenL2, addrL, emailL, certifiedNumL;
@@ -33,70 +38,93 @@ public class JoinMember extends JFrame implements ActionListener {
 
 	public JoinMember() {
 		super("»∏ø¯∞°¿‘");
+		getContentPane().setFont(new Font("Dialog", Font.PLAIN, 12));
+		setResizable(false);
+		setBounds(1150, 200, 435, 556);
+/*		setSize(420,570);
+		
+		Dimension frameSize = this.getSize(); // «¡∑π¿” ªÁ¿Ã¡Ó
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // ∏¥œ≈Õ ªÁ¿Ã¡Ó
+
+		this.setLocation((screenSize.width - frameSize.width)/2, (screenSize.height - frameSize.height)/2); // »≠∏È ¡ﬂæ”
+*/	
 
 		getContentPane().setLayout(null);
+		getContentPane().setBackground(new Color(255, 255, 240));
 
 		// JLable
-		idL = new JLabel("æ∆ ¿Ã µ : ");
-		idL.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
-		pwL1 = new JLabel("∫Òπ–π¯»£ : ");
-		pwL1.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
+		idL = new JLabel("æ∆      ¿Ã       µ : ");
+		idL.setFont(new Font("Dialog", Font.BOLD, 12));
+		pwL1 = new JLabel("∫Ò   π–   π¯   »£ : ");
+		pwL1.setFont(new Font("Dialog", Font.BOLD, 12));
 		pwL2 = new JLabel("∫Òπ–π¯»£ »Æ¿Œ : ");
-		pwL2.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
-		nameL = new JLabel("¿Ã      ∏ß : ");
-		nameL.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
-		genderL = new JLabel("º∫      ∫∞ : ");
-		genderL.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
-		telL = new JLabel("¿¸»≠π¯»£ : ");
-		telL.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
+		pwL2.setFont(new Font("Dialog", Font.BOLD, 12));
+		nameL = new JLabel("¿Ã                 ∏ß : ");
+		nameL.setFont(new Font("Dialog", Font.BOLD, 12));
+		genderL = new JLabel("º∫                 ∫∞ : ");
+		genderL.setFont(new Font("Dialog", Font.BOLD, 12));
+		telL = new JLabel("¿¸   »≠   π¯   »£ : ");
+		telL.setFont(new Font("Dialog", Font.BOLD, 12));
 		hyphenL1 = new JLabel("-");
+		hyphenL1.setHorizontalAlignment(SwingConstants.CENTER);
 		hyphenL2 = new JLabel("-");
-		addrL = new JLabel("¡÷      º“ : ");
-		addrL.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
-		emailL = new JLabel("\uC774  \uBA54  \uC77C : ");
-		emailL.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
-		certifiedNumL = new JLabel("¿Œ¡ıπ¯»£ : ");
-		certifiedNumL.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
+		hyphenL2.setHorizontalAlignment(SwingConstants.CENTER);
+		addrL = new JLabel("¡÷                 º“ : ");
+		addrL.setFont(new Font("Dialog", Font.BOLD, 12));
+		emailL = new JLabel("¿Ã      ∏ﬁ       ¿œ : ");
+		emailL.setFont(new Font("Dialog", Font.BOLD, 12));
+		certifiedNumL = new JLabel("¿Œ   ¡ı   π¯   »£ : ");
+		certifiedNumL.setFont(new Font("Dialog", Font.BOLD, 12));
 
-		idL.setBounds(20, 29, 80, 20);
-		pwL1.setBounds(20, 66, 80, 20);
-		pwL2.setBounds(20, 101, 90, 20);
-		nameL.setBounds(20, 136, 80, 20);
-		genderL.setBounds(20, 168, 80, 20);
-		telL.setBounds(20, 199, 80, 20);
-		hyphenL1.setBounds(170, 200, 10, 20);
-		hyphenL2.setBounds(245, 200, 10, 20);
-		addrL.setBounds(20, 235, 80, 20);
-		emailL.setBounds(20, 270, 80, 20);
-		certifiedNumL.setBounds(20, 353, 80, 20);
+		idL.setBounds(28, 20, 96, 36);
+		pwL1.setBounds(28, 66, 92, 36);
+		pwL2.setBounds(28, 112, 92, 36);
+		nameL.setBounds(28, 158, 92, 36);
+		genderL.setBounds(28, 196, 92, 36);
+		telL.setBounds(28, 232, 92, 36);
+		hyphenL1.setBounds(196, 239, 17, 20);
+		hyphenL2.setBounds(273, 239, 17, 20);
+		addrL.setBounds(28, 278, 92, 36);
+		emailL.setBounds(28, 324, 92, 36);
+		certifiedNumL.setBounds(28, 415, 92, 36);
 
 		// JTextField
 		idT = new JTextField(8);
+		idT.setFont(new Font("±º∏≤", Font.PLAIN, 15));
 		pwT1 = new JPasswordField(8);
+		pwT1.setFont(new Font("±º∏≤", Font.PLAIN, 15));
 		pwT2 = new JPasswordField(8);
+		pwT2.setFont(new Font("±º∏≤", Font.PLAIN, 15));
 		nameT = new JTextField(8);
+		nameT.setFont(new Font("±º∏≤", Font.PLAIN, 15));
 		telT1 = new JTextField(4);
+		telT1.setFont(new Font("±º∏≤", Font.PLAIN, 15));
 		telT2 = new JTextField(4);
+		telT2.setFont(new Font("±º∏≤", Font.PLAIN, 15));
 		addrT = new JTextField(10);
+		addrT.setFont(new Font("±º∏≤", Font.PLAIN, 15));
 		emailT = new JTextField(10);
+		emailT.setFont(new Font("±º∏≤", Font.PLAIN, 15));
 		certifiedNumT = new JTextField(10);
+		certifiedNumT.setFont(new Font("±º∏≤", Font.PLAIN, 15));
 
-		idT.setBounds(110, 30, 100, 25);
-		pwT1.setBounds(110, 65, 100, 25);
-		pwT2.setBounds(110, 100, 100, 25);
-		nameT.setBounds(110, 135, 100, 25);
-		telT1.setBounds(188, 198, 45, 25);
-		telT2.setBounds(267, 198, 45, 25);
-		addrT.setBounds(110, 234, 202, 25);
-		emailT.setBounds(110, 269, 202, 25);
-		certifiedNumT.setBounds(110, 352, 100, 25);
+		idT.setBounds(136, 20, 166, 36);
+		pwT1.setBounds(136, 66, 166, 36);
+		pwT2.setBounds(136, 112, 166, 36);
+		nameT.setBounds(136, 158, 166, 36);
+		telT1.setBounds(213, 231, 60, 36);
+		telT2.setBounds(292, 232, 60, 36);
+		addrT.setBounds(136, 277, 268, 36);
+		emailT.setBounds(136, 323, 268, 36);
+		certifiedNumT.setBounds(136, 415, 166, 36);
 
 		// JComboBox
 		telCB = new JComboBox<String>();
+		telCB.setFont(new Font("±º∏≤", Font.PLAIN, 15));
 		telCB.setModel(new DefaultComboBoxModel<String>(
 	            new String[] {"010", "011", "017", "019"}));
 
-		telCB.setBounds(110, 199, 50, 25);
+		telCB.setBounds(136, 231, 60, 36);
 
 		// JRadioButton & ButtonGroup
 		ButtonGroup group = new ButtonGroup();
@@ -104,34 +132,37 @@ public class JoinMember extends JFrame implements ActionListener {
 		male.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
 		female = new JRadioButton("ø©º∫");
 		female.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
+		male.setBackground(new Color(255, 255, 240));
+		female.setBackground(new Color(255, 255, 240));
+		
 		group.add(male);
 		group.add(female);
 
-		male.setBounds(110, 166, 60, 25);
-		female.setBounds(170, 166, 60, 25);
+		male.setBounds(136, 200, 60, 25);
+		female.setBounds(196, 200, 60, 25);
 
 		// JButton
 		overlapB = new JButton("¡ﬂ∫π∞ÀªÁ");
-		overlapB.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
+		overlapB.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 12));
 		CertifiedB = new JButton("¿Œ¡ıπ¯»£ πﬁ±‚");
-		CertifiedB.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
+		CertifiedB.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 12));
 		joinB = new JButton("∞°¿‘");
-		joinB.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
+		joinB.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 12));
 		cancelB = new JButton("√Îº“");
 		cancelB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 		});
-		cancelB.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
+		cancelB.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 12));
 		numberconfirmB = new JButton("¿Œ¡ı »Æ¿Œ");
-		numberconfirmB.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.PLAIN, 12));
+		numberconfirmB.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 12));
 
-		overlapB.setBounds(222, 29, 90, 25);
-		CertifiedB.setBounds(110, 304, 202, 25);
-		joinB.setBounds(152, 399, 70, 36);
-		cancelB.setBounds(242, 399, 70, 36);
-		numberconfirmB.setBounds(222, 351, 90, 25);
+		overlapB.setBounds(314, 18, 90, 36);
+		CertifiedB.setBounds(292, 369, 112, 36);
+		joinB.setBounds(252, 481, 70, 36);
+		cancelB.setBounds(334, 481, 70, 36);
+		numberconfirmB.setBounds(314, 415, 90, 36);
 
 		// Container
 		Container con = this.getContentPane();
@@ -184,7 +215,6 @@ public class JoinMember extends JFrame implements ActionListener {
 		con.add(joinB);
 		con.add(cancelB);
 
-		setBounds(1100, 200, 350, 491);
 		// con.setBackground(new Color(200, 191, 231));
 		setVisible(true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE); // «ˆ¿Á √¢ ¥›¥¬¥Ÿ.
@@ -337,6 +367,7 @@ public class JoinMember extends JFrame implements ActionListener {
 		certifiedNumT.setText("");
 		
 		setVisible(false);
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 	}

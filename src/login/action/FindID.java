@@ -17,7 +17,10 @@ import javax.swing.border.EmptyBorder;
 
 import login.bean.MemberDTO;
 import login.dao.LoginDAO;
+
+import java.awt.Color;
 import java.awt.Font;
+import javax.swing.SwingConstants;
 
 public class FindID extends JFrame implements ActionListener{
 	private JPanel contentPane;
@@ -32,57 +35,61 @@ public class FindID extends JFrame implements ActionListener{
 	public FindID() {
 		setTitle("¾ÆÀÌµð Ã£±â");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(1100, 200, 350, 217);
+		setBounds(1150, 250, 375, 230);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
+		contentPane.setBackground(new Color(255, 255, 240));
 		contentPane.setLayout(null);
 		
 		JLabel nameL = new JLabel("ÀÌ      ¸§ : ");
-		nameL.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
-		nameL.setBounds(12, 38, 90, 30);
+		nameL.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 12));
+		nameL.setBounds(22, 38, 90, 30);
 		contentPane.add(nameL);
 		
 		JLabel telL = new JLabel("ÀüÈ­¹øÈ£ : ");
-		telL.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
-		telL.setBounds(12, 80, 90, 30);
+		telL.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 12));
+		telL.setBounds(22, 86, 90, 30);
 		contentPane.add(telL);
 		
 		idFindB = new JButton("¾ÆÀÌµð Ã£±â");
-		idFindB.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
-		idFindB.setBounds(202, 129, 120, 40);
+		idFindB.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 12));
+		idFindB.setBounds(218, 144, 120, 30);
 		contentPane.add(idFindB);
 		
 		nameT = new JTextField();
-		nameT.setBounds(77, 40, 100, 30);
+		nameT.setBounds(94, 40, 120, 30);
 		contentPane.add(nameT);
 		nameT.setColumns(10);
 		
 		telT1 = new JTextField();
 		telT1.setColumns(10);
-		telT1.setBounds(166, 82, 48, 30);
+		telT1.setBounds(186, 88, 67, 30);
 		contentPane.add(telT1);
 		
 		telCB = new JComboBox();
 		telCB.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
 		telCB.setModel(new DefaultComboBoxModel(new String[] {"010", "011", "017", "019"}));
-		telCB.setBounds(77, 82, 55, 30);
+		telCB.setBounds(94, 86, 73, 30);
 		contentPane.add(telCB);
 		
 		telT2 = new JTextField();
 		telT2.setColumns(10);
-		telT2.setBounds(248, 82, 48, 30);
+		telT2.setBounds(271, 88, 67, 30);
 		contentPane.add(telT2);
 		
 		JLabel label = new JLabel("-");
-		label.setBounds(144, 89, 10, 15);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setBounds(168, 95, 17, 15);
 		contentPane.add(label);
 		
 		JLabel label_1 = new JLabel("-");
-		label_1.setBounds(226, 89, 10, 15);
+		label_1.setHorizontalAlignment(SwingConstants.CENTER);
+		label_1.setBounds(252, 95, 17, 15);
 		contentPane.add(label_1);
 		
 		idFindB.addActionListener(this);
+		setResizable(false);
 		setVisible(true);
 		
 		this.addWindowListener(new WindowAdapter(){

@@ -12,7 +12,9 @@ import login.bean.MemberDTO;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Toolkit;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -20,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
@@ -38,6 +41,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
+import java.awt.Image;
 
 public class SearchListWindow extends JFrame implements ListSelectionListener, ActionListener{
    private static final String String = null;
@@ -54,56 +58,76 @@ public class SearchListWindow extends JFrame implements ListSelectionListener, A
     private static final int CHECK_COL = 1;
 
    public SearchListWindow(MemberDTO memberDTO, String fieldName, String keyword) {
-        super("도서 검색");
-           this.memberDTO = memberDTO;
+         super("도서 검색");
+         
+ 		setSize(1100,800);
+ 		Dimension frameSize = this.getSize(); // 프레임 사이즈
+ 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // 모니터 사이즈	
+ 		this.setLocation((screenSize.width - frameSize.width)/2, 
+ 				(screenSize.height - frameSize.height)/2); // 화면 중앙
+                  
+         this.memberDTO = memberDTO;
 
          JPanel jp = new JPanel();
          setContentPane(jp);
          Container con = this.getContentPane();
          con.setLayout(null);      
-         setBounds(100, 100, 878, 640);
+ //      setBounds(100, 100, 878, 640);
+ 		 getContentPane().setBackground(new Color(240, 255, 255));
+ 		 
+  		JLabel libMarkL = new JLabel();
+	    String imagePath ="libMark.png";
+		ImageIcon originIcon = new ImageIcon(imagePath);
+	    Image originImg = originIcon.getImage();
+
+	 
+	    //이미지로 변환
+	    Image changedImg = originImg.getScaledInstance(100,100,Image.SCALE_SMOOTH);
+	    ImageIcon Icon = new ImageIcon(changedImg);
+
+	    libMarkL.setIcon(Icon);
+		
+	    libMarkL.setBounds(50, 10, 100, 100);
+	    getContentPane().add(libMarkL); 				 
+ 		  
          //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
          setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-         JPanel panel = new JPanel(); //마크들어갈 자리
-         panel.setBounds(50, 40, 50, 50);
-         panel.setBackground(new Color(130, 130, 250));
-      
          comboBox = new JComboBox<String>();
-         comboBox.setBounds(50, 115, 85, 36);
+         comboBox.setBounds(50, 115, 85, 45);
          comboBox.setModel(new DefaultComboBoxModel<String>(
                new String[] {"전체", "도서명", "저자", "출판사", "장르"}));
 
          searchT = new JTextField();
-         searchT.setBounds(135, 115, 600, 36);
+         searchT.setBounds(135, 115, 845, 45);
          searchT.setColumns(10);   
          
          searchB = new JButton("검색");
-         searchB.setBounds(735, 115, 65, 36);
+         searchB.setBounds(979, 115, 71, 45);
          
          cartB = new JButton("장바구니 담기");
-         cartB.setBounds(564, 553, 117, 31);
+         cartB.setBounds(781, 694, 117, 45);
 
 
          undoB = new JButton("나가기");
-         undoB.setBounds(693, 553, 117, 31);
+         undoB.setBounds(923, 694, 117, 45);
       
 
          chooseBookL = new JLabel("선택한 책  :");
          chooseBookL.setFont(new Font("굴림", Font.BOLD, 15));
-         chooseBookL.setBounds(62, 553, 85, 31);
+         chooseBookL.setBounds(71, 694, 85, 45);
 
          
          bookCountT = new JTextField();
          bookCountT.setForeground(new Color(255, 102, 51));
          bookCountT.setFont(new Font("굴림", Font.BOLD, 20));
          bookCountT.setHorizontalAlignment(SwingConstants.RIGHT);
-         bookCountT.setBounds(185, 553, 116, 31);
+         bookCountT.setBounds(183, 692, 116, 45);
          bookCountT.setColumns(10);
          
          countItemL = new JLabel("권");
          countItemL.setFont(new Font("굴림", Font.BOLD, 15));
-         countItemL.setBounds(313, 553, 57, 31);
+         countItemL.setBounds(311, 694, 57, 45);
 
          String[] column = {"","","","","",""}; // 칼럼이름 설정
          dtm = new DefaultTableModel(column, 0) {
@@ -138,7 +162,6 @@ public class SearchListWindow extends JFrame implements ListSelectionListener, A
          jtable.getTableHeader().setReorderingAllowed(false); //칼럼이동 불가
          jtable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
          jtable.setAutoCreateRowSorter(true);
-         jtable.setCellSelectionEnabled(rootPaneCheckingEnabled); //특정셀 클릭
          jtable.setAutoResizeMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
          
          jtable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);//열크기 조절
@@ -154,9 +177,8 @@ public class SearchListWindow extends JFrame implements ListSelectionListener, A
 
          JScrollPane scrollPane = new JScrollPane(jtable);
          scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-         scrollPane.setBounds(50, 180, 760, 343);
-
-         getContentPane().add(panel);   
+         scrollPane.setBounds(50, 201, 1000, 463);
+ 
          getContentPane().add(comboBox);
          getContentPane().add(searchT);
          getContentPane().add(searchB);   

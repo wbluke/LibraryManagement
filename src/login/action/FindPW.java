@@ -1,6 +1,7 @@
 package login.action;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,53 +30,56 @@ public class FindPW extends JFrame implements ActionListener {
 	public FindPW() {
 		setTitle("ºñ¹Ð¹øÈ£ Ã£±â");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(1100, 200, 298, 249);
+		setBounds(1150, 300, 375, 249);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		contentPane.setBackground(new Color(255, 255, 240));
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.add(panel, BorderLayout.CENTER);
+		panel.setBackground(new Color(255, 255, 240));
 		panel.setLayout(null);
 		
 		JLabel idL = new JLabel("¾Æ ÀÌ µð : ");
-		idL.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
-		idL.setBounds(12, 24, 90, 30);
+		idL.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 12));
+		idL.setBounds(23, 24, 90, 30);
 		panel.add(idL);
 		
 		JLabel nameL = new JLabel("ÀÌ      ¸§ : ");
-		nameL.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
-		nameL.setBounds(12, 64, 90, 30);
+		nameL.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 12));
+		nameL.setBounds(23, 62, 90, 30);
 		panel.add(nameL);
 		
 		pwFindB = new JButton("ºñ¹Ð¹øÈ£ Ã£±â");
-		pwFindB.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
-		pwFindB.setBounds(141, 151, 120, 40);
+		pwFindB.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 12));
+		pwFindB.setBounds(204, 149, 123, 40);
 		panel.add(pwFindB);
 		
 		idT = new JTextField();
-		idT.setBounds(80, 26, 100, 30);
+		idT.setBounds(91, 24, 153, 30);
 		idT.setColumns(10);
 		panel.add(idT);
 		
 		nameT = new JTextField();
-		nameT.setBounds(80, 66, 100, 30);
+		nameT.setBounds(91, 64, 153, 30);
 		nameT.setColumns(10);
 		panel.add(nameT);
 		
 		JLabel emailL = new JLabel("ÀÌ ¸Þ ÀÏ : ");
-		emailL.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
-		emailL.setBounds(12, 104, 90, 30);
+		emailL.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 12));
+		emailL.setBounds(23, 102, 90, 30);
 		panel.add(emailL);
 		
 		emailT = new JTextField();
 		emailT.setColumns(10);
-		emailT.setBounds(80, 106, 181, 30);
+		emailT.setBounds(91, 104, 236, 30);
 		panel.add(emailT);
 		
 		pwFindB.addActionListener(this);
+		setResizable(false);
 		setVisible(true);
 		
 		this.addWindowListener(new WindowAdapter(){
