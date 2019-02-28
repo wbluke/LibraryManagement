@@ -50,12 +50,21 @@ public class MyPage extends JFrame {
 	private DefaultTableModel dtm;
 	private DefaultTableCellRenderer dtc;
 	private AbstractButton memberDeleteB;
+	private boolean isBookExist = false;
+	private boolean isCartExist = false;
+	private JButton selectRentB;
+	private JButton allDeleteB;
+	private JButton allRentB;
+	private AbstractButton selectDeleteB;
 
 	@SuppressWarnings("serial")
 	public MyPage(MemberDTO memberDTO) {
 		super("MyPage");
 		
 		this.memberDTO = memberDTO;
+		
+		isBookExist = false;
+		isCartExist = false;
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -79,11 +88,17 @@ public class MyPage extends JFrame {
 				String[] option = {"회원 탈퇴", "취 소"};
 				int selected = JOptionPane.showOptionDialog(null, "정말 탈퇴하시겠습니까?", "회원 탈퇴", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, option, "취 소");
 				if(selected == JOptionPane.YES_OPTION) {
+					if (isBookExist) {
+						JOptionPane.showMessageDialog(
+								null, "대여 중인 도서가 남아있을 경우 탈퇴 처리가 불가합니다.\n대여중인 도서를 반납해주세요.", "안내", 
+								JOptionPane.WARNING_MESSAGE);
+						return;
+					}
 					String id = memberDTO.getMemberId();
 					MemberDAO memberDAO = MemberDAO.getInstance();
 					memberDAO.memberSecession(id);
 					JOptionPane.showMessageDialog(
-							null, "회원 탈퇴 처리되었습니다.", "안내", 
+							null, "회원 탈퇴 처리되었습니다.\n프로그램이 종료됩니다.", "안내", 
 							JOptionPane.WARNING_MESSAGE);
 					System.exit(0);
 				}
@@ -102,7 +117,7 @@ public class MyPage extends JFrame {
 		basketL.setBounds(425, 92, 76, 23);
 		contentPane.add(basketL);
 		
-		JButton allRentB = new JButton("\uC804\uBD80 \uB300\uC5EC");
+		allRentB = new JButton("\uC804\uBD80 \uB300\uC5EC");
 		allRentB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String[] option = {"전부 대여", "취 소"};
@@ -147,7 +162,7 @@ public class MyPage extends JFrame {
 		allRentB.setBounds(565, 60, 110, 23);
 		contentPane.add(allRentB);
 		
-		JButton allDeleteB = new JButton("\uC804\uBD80 \uBE44\uC6B0\uAE30");
+		allDeleteB = new JButton("\uC804\uBD80 \uBE44\uC6B0\uAE30");
 		allDeleteB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String[] option = {"전부 비우기", "취 소"};
@@ -170,7 +185,7 @@ public class MyPage extends JFrame {
 		allDeleteB.setBounds(565, 92, 110, 23);
 		contentPane.add(allDeleteB);
 		
-		JButton selectRentB = new JButton("\uC120\uD0DD \uB300\uC5EC");
+		selectRentB = new JButton("\uC120\uD0DD \uB300\uC5EC");
 		selectRentB.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		selectRentB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -232,7 +247,7 @@ public class MyPage extends JFrame {
 		selectRentB.setBounds(687, 60, 110, 23);
 		contentPane.add(selectRentB);
 		
-		JButton selectDeleteB = new JButton("\uC120\uD0DD \uBE44\uC6B0\uAE30");
+		selectDeleteB = new JButton("\uC120\uD0DD \uBE44\uC6B0\uAE30");
 		selectDeleteB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String[] option = {"선택 취소", "취 소"};
@@ -370,6 +385,18 @@ public class MyPage extends JFrame {
 		// 장바구니
 		callBookCart();
 		
+		if (isCartExist) {
+			allRentB.setEnabled(true);
+			allDeleteB.setEnabled(true);
+			selectRentB.setEnabled(true);
+			selectDeleteB.setEnabled(true);
+		}else {
+			allRentB.setEnabled(false);
+			allDeleteB.setEnabled(false);
+			selectRentB.setEnabled(false);
+			selectDeleteB.setEnabled(false);
+		}
+		
 		this.addWindowListener(new WindowAdapter(){
 			public void	windowClosing(WindowEvent e){
 				setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -388,6 +415,7 @@ public class MyPage extends JFrame {
 		}         
 
 		if(!list.isEmpty()) {
+			isBookExist = true;
 			for(BookDTO book : list) {
 				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 				String start = book.getEn();
@@ -421,6 +449,24 @@ public class MyPage extends JFrame {
 	}
 	
 	public void callBookCart() {
+		if (memberDTO.getBookCart().isEmpty()) {
+			isCartExist  = false;
+		}else {
+			isCartExist  = true;			
+		}
+		
+		if (isCartExist) {
+			allRentB.setEnabled(true);
+			allDeleteB.setEnabled(true);
+			selectRentB.setEnabled(true);
+			selectDeleteB.setEnabled(true);
+		}else {
+			allRentB.setEnabled(false);
+			allDeleteB.setEnabled(false);
+			selectRentB.setEnabled(false);
+			selectDeleteB.setEnabled(false);
+		}
+		
 		// DefaultTableModel에 있는 기존 데이터 지우기
         for (int i = 0; i < dtm1.getRowCount();) {
         	dtm1.removeRow(0);

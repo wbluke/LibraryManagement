@@ -208,8 +208,34 @@ public class SearchListWindow extends JFrame implements ListSelectionListener, A
             public void actionPerformed(ActionEvent e) {
                BookDAO bookDAO = BookDAO.getInstance();
                
+               ArrayList<Integer> list = new ArrayList<Integer>();
+     	      //BookDTO bookDTOSeq = new BookDTO();
+     	      //System.out.println(dtm.getRowCount());
+     	      
+     	      for (int i = 0; i < dtm.getRowCount() ; i++) {
+     	         //System.out.println("1");
+     	         Boolean CartCheck = Boolean.valueOf(dtm.getValueAt(i, 0).toString());
+     	         int cartSeq = (int) dtm.getValueAt(i, 1);
+
+     	         if (CartCheck) {
+     	            //System.out.println(cartSeq);
+     	        	 
+     	        	 
+     	        	 // 대여 불가 항목인지 판단하기
+     	        	 if (!dtm.getValueAt(i, 6).equals("")) {
+     	        		 JOptionPane.showMessageDialog(
+     	   	                  null, "선택 항목 중 대여불가 항목이 있습니다.\n체크한 항목을 확인해주세요.", "안내", 
+     	   	                  JOptionPane.WARNING_MESSAGE);
+     	        		 return;
+     	        	 }else {
+     	        		 list.add(cartSeq);	        		 
+     	        	 }
+     	         }
+     	      }
+               
                //BookDAO의 cart함수 결과값인 cartList 가져와 저장
-               ArrayList<BookDTO> cartList = bookDAO.cart(); 
+               ArrayList<BookDTO> cartList = bookDAO.cart(list); 
+               //bookDAO.searchByBookSeq(cartSeq).getSt()
                
                if (cartList != null) {
             	   	ArrayList<BookDTO> cart = memberDTO.getBookCart();
@@ -269,19 +295,47 @@ public class SearchListWindow extends JFrame implements ListSelectionListener, A
    public void search() {
       //데이터
       fieldName = comboBox.getSelectedItem().toString();
-      value = searchT.getText();
-      System.out.println("필드명"+ fieldName);
+      value = searchT.getText().trim();
+      //System.out.println("필드명"+ fieldName);
       
       //DB
       BookDAO bookDAO = BookDAO.getInstance();
       
       //검색어 유무
-      if(value.trim().equals("")) {
+      if(value.equals("")) {
          JOptionPane.showMessageDialog(
             null, "검색할 단어를 입력하세요", "안내", 
             JOptionPane.WARNING_MESSAGE);
-
-      }else bookDAO.searchElement(dtm, fieldName, value);   
+         return;
+      }
+      
+      // DefaultTableModel에 있는 기존 데이터 지우기
+      for (int i = 0; i < dtm.getRowCount();) {
+    	  dtm.removeRow(0);
+      }  
+      
+	  ArrayList<BookDTO> list = bookDAO.searchElement(fieldName, value);   
+	  if (list.isEmpty()) {
+		  JOptionPane.showMessageDialog(
+                  null, "검색한 단어의 책이 없습니다. \n검색을 원하시면 다시 입력해주세요.", "안내", 
+                  JOptionPane.WARNING_MESSAGE);
+		  return;
+	  }
+	  
+	  for (BookDTO book : list) {
+		  String borrowed = "";
+		  
+	      if (book.getSt() == null) {
+	    	  //borrowed = "";
+	      }else {
+	    	  borrowed = "대여 불가";	        	 
+	      }
+	         
+          Object data[] = {Boolean.FALSE, book.getSeq(), book.getBookName(), book.getWriter(),
+                          book.getPublisher(), book.getCode(), borrowed};
+               
+          dtm.addRow(data);
+	  }
    }
 
    @Override

@@ -20,11 +20,15 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.awt.event.ActionEvent;
 
 public class ClientMain extends JFrame implements ActionListener {
@@ -40,11 +44,12 @@ public class ClientMain extends JFrame implements ActionListener {
 	private JLabel lblNewLabel_1;
 	private JLabel label_1;
 	private JLabel lblTel;
-	private JPanel panel_3;
 	private JButton btnNewButton_1;
 	private JButton btnNewButton_2;
 	private JLabel lblNewLabel;
 	private MemberDTO memberDTO;
+	private Image img;
+	private JLabel mapLabel;
 
 	/**
 	 * Launch the application.
@@ -102,26 +107,36 @@ public class ClientMain extends JFrame implements ActionListener {
 		contentPane.add(panel_2);
 		
 		libraryInfoP = new JPanel();
-		libraryInfoP.setBounds(210, 474, 386, 74);
+		libraryInfoP.setBounds(210, 474, 386, 104);
 		contentPane.add(libraryInfoP);
 		libraryInfoP.setLayout(null);
 		
 		lblNewLabel_1 = new JLabel("\uC11C\uC6B8\uD2B9\uBCC4\uC2DC \uC885\uB85C\uAD6C \uB3C8\uD654\uBB38\uB85C 26 \uB2E8\uC131\uC0AC");
+		lblNewLabel_1.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
 		lblNewLabel_1.setBounds(0, 0, 386, 26);
 		libraryInfoP.add(lblNewLabel_1);
 		
 		label_1 = new JLabel("\uC774\uC6A9\uC2DC\uAC04 : \uC6D4~\uAE08 08 : 30 ~ 16 : 30 / \uD1A0, \uC77C, \uACF5\uD734\uC77C \uC26C\uB294\uB0A0");
+		label_1.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
 		label_1.setBounds(0, 24, 386, 26);
 		libraryInfoP.add(label_1);
 		
 		lblTel = new JLabel("TEL : 02 - 1234 - 1234 ~ 9");
+		lblTel.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
 		lblTel.setBounds(0, 48, 386, 26);
 		libraryInfoP.add(lblTel);
 		
-		panel_3 = new JPanel();
-		panel_3.setBackground(SystemColor.activeCaption);
-		panel_3.setBounds(617, 462, 203, 130);
-		contentPane.add(panel_3);
+		JLabel label = new JLabel("\uC6B0\uCE21 \uC9C0\uB3C4\uB97C \uB354\uBE14\uD074\uB9AD\uD558\uC2DC\uBA74 \uB3C4\uC11C\uAD00 \uC0C1\uC138 \uC815\uBCF4\uB97C \uBCF4\uC2E4 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
+		label.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
+		label.setBounds(0, 72, 386, 26);
+		libraryInfoP.add(label);
+		
+		//panel_3 = new JPanel(); //µµ¼­°üÀ§Ä¡_ÃÖÁ¾.png
+		File f = new File("µµ¼­°üÀ§Ä¡_ÃÖÁ¾.png");
+
+		System.out.println(f.exists()); // ÆÄÀÏÀÌ ÀÖ´ÂÁö È®ÀÎ¿ë true/false
+		Toolkit tk = Toolkit.getDefaultToolkit();
+		img = tk.getImage("c:/work/pack/pack1.jpg");
 		
 		btnNewButton_1 = new JButton("\uB9C8\uC774\uD398\uC774\uC9C0");
 		btnNewButton_1.addActionListener(new ActionListener() {
@@ -152,6 +167,11 @@ public class ClientMain extends JFrame implements ActionListener {
 		lblNewLabel.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 12));
 		lblNewLabel.setBounds(41, 34, 246, 15);
 		contentPane.add(lblNewLabel);
+		
+		mapLabel = new JLabel("New label");
+		mapLabel.setBounds(608, 462, 211, 115);
+		contentPane.add(mapLabel);
+	    
 		
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(400, 200, 878, 640);

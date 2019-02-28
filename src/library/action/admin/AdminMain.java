@@ -114,6 +114,10 @@ public class AdminMain extends JFrame {
 		JButton btnNewButton = new JButton("\uAC80\uC0C9");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (textField.getText().trim().equals("")) {
+					JOptionPane.showMessageDialog(null, "검색어를 입력해주세요.");
+					return;
+				}
 				// DefaultTableModel에 있는 기존 데이터 지우기
 		        for (int i = 0; i < dtm.getRowCount();) {
 		        	dtm.removeRow(0);
@@ -192,6 +196,10 @@ public class AdminMain extends JFrame {
 				BookDAO bookDAO = new BookDAO();
 				int row = table.getSelectedRow();
 				int col = table.getSelectedColumn();
+				if (row == -1 || col == -1) {
+					JOptionPane.showMessageDialog(null, "삭제할 항목을 선택해주세요.");
+					return;
+				}
 				String value = "" + table.getValueAt(row, 0);
 
 				DefaultTableModel model2 = (DefaultTableModel) table.getModel();
@@ -321,6 +329,10 @@ public class AdminMain extends JFrame {
 		JButton btnNewButton_2 = new JButton("\uC218\uC815");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (textField_1.getText().equals("")) {
+					JOptionPane.showMessageDialog(null, "수정할 도서 정보를 선택해주세요.");
+					return;
+				}
 				BookDAO bookDAO = BookDAO.getInstance();
 				BookDTO bookDTO = new BookDTO();
 
@@ -339,16 +351,48 @@ public class AdminMain extends JFrame {
 					bookDAO.updatePartsOfBookInfo(bookDTO);
 
 					JOptionPane.showMessageDialog(null, "정보가 수정되었습니다.");
+					
+					//============================================================새로고침(새로 검색)
+					// DefaultTableModel에 있는 기존 데이터 지우기
+					for (int i = 0; i < dtm.getRowCount();) {
+						dtm.removeRow(0);
+					}
+					
+					ArrayList<BookDTO> list = bookDAO.searchElement((String)comboBox.getSelectedItem(), textField.getText().trim());
+					
+					if (list.isEmpty()) {
+						
+					}else {
+						for(BookDTO book : list) {
+							String borrowed = null;
+							if (book.getSt() == null) {
+								borrowed = "";
+							}else {
+								borrowed = "대여중";
+							}
+							
+							Object data[] = { book.getSeq(), book.getBookName(), book.getWriter(), book.getPublisher(), book.getCode(), borrowed};
+							dtm.addRow(data);
+						}
+					}
 				}
 				
-				//============================================================새로고침(새로 검색)
+			}
+		});
+		btnNewButton_2.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+		btnNewButton_2.setBounds(614, 419, 78, 67);
+		books.add(btnNewButton_2);
+		
+		JButton button_11 = new JButton("\uC804\uCCB4 \uB3C4\uC11C \uBCF4\uAE30");
+		button_11.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				// DefaultTableModel에 있는 기존 데이터 지우기
-		        for (int i = 0; i < dtm.getRowCount();) {
-		        	dtm.removeRow(0);
-		        }
-		        
-				ArrayList<BookDTO> list = bookDAO.searchElement((String)comboBox.getSelectedItem(), textField.getText().trim());
+				for (int i = 0; i < dtm.getRowCount();) {
+					dtm.removeRow(0);
+				}
 				
+				BookDAO bookDAO = BookDAO.getInstance();
+				ArrayList<BookDTO> list = bookDAO.searchAllBooks();
 				if (list.isEmpty()) {
 					
 				}else {
@@ -366,9 +410,9 @@ public class AdminMain extends JFrame {
 				}
 			}
 		});
-		btnNewButton_2.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-		btnNewButton_2.setBounds(614, 419, 78, 67);
-		books.add(btnNewButton_2);
+		button_11.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+		button_11.setBounds(397, 120, 137, 30);
+		books.add(button_11);
 		
 		JPanel members = new JPanel();
 		tabbedPane.addTab("\uD68C\uC6D0 \uAD00\uB9AC", null, members, null);
@@ -436,6 +480,10 @@ public class AdminMain extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int row = table_1.getSelectedRow();
 				int col = table_1.getSelectedColumn();
+				if (row == -1 || col == -1) {
+					JOptionPane.showMessageDialog(null, "삭제할 항목을 선택해주세요.");
+					return;
+				}
 				String targetID = (String) table_1.getValueAt(row, 1);
 				
 				DefaultTableModel model2 = (DefaultTableModel) table_1.getModel();
@@ -545,6 +593,10 @@ public class AdminMain extends JFrame {
 		JButton button_4 = new JButton("\uC218\uC815");
 		button_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (textField_7.getText().equals("")) {
+					JOptionPane.showMessageDialog(null, "수정할 도서 정보를 선택해주세요.");
+					return;
+				}
 				MemberDAO memberDAO = MemberDAO.getInstance();
 				MemberDTO memberDTO = new MemberDTO();
 
@@ -568,36 +620,37 @@ public class AdminMain extends JFrame {
 					memberDAO.updatePartsOfMemberInfo(memberDTO);
 
 					JOptionPane.showMessageDialog(null, "정보가 수정되었습니다.");
-				}
-				
-				//============================================================새로고침(새로 검색)
-				for (int i = 0; i < dtm1.getRowCount();) {
-					dtm1.removeRow(0);
-				}
-				
-				String name = textField_3.getText().trim();
-				
-				ArrayList<MemberDTO> list = memberDAO.searchByName(name);				
-				
-				if(list.isEmpty()) {
 					
-				} else {
-					String gender = null;
-					for(MemberDTO member : list) {
-						if (member.getGender() == 0) { 
-							gender = "남";
-						}else{
-							gender = "여";
-						}
+					//============================================================새로고침(새로 검색)
+					for (int i = 0; i < dtm1.getRowCount();) {
+						dtm1.removeRow(0);
+					}
+					
+					String name = textField_3.getText().trim();
+					
+					ArrayList<MemberDTO> list = memberDAO.searchByName(name);				
+					
+					if(list.isEmpty()) {
 						
-						Object data[] = { 
-								member.getMemberName(), member.getMemberId(), 
-								member.getPw(), gender, member.getAddress(), 
-								member.getTel1() + "-" + member.getTel2() + "-" + member.getTel3(), member.getEmail()
-						};
-						dtm1.addRow(data);
+					} else {
+						String gender = null;
+						for(MemberDTO member : list) {
+							if (member.getGender() == 0) { 
+								gender = "남";
+							}else{
+								gender = "여";
+							}
+							
+							Object data[] = { 
+									member.getMemberName(), member.getMemberId(), 
+									member.getPw(), gender, member.getAddress(), 
+									member.getTel1() + "-" + member.getTel2() + "-" + member.getTel3(), member.getEmail()
+							};
+							dtm1.addRow(data);
+						}
 					}
 				}
+				
 			}
 		});
 		button_4.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
@@ -707,6 +760,41 @@ public class AdminMain extends JFrame {
 		JLabel label_11 = new JLabel("-");
 		label_11.setBounds(264, 485, 14, 15);
 		members.add(label_11);
+		
+		JButton button_12 = new JButton("\uC804\uCCB4 \uD68C\uC6D0 \uBCF4\uAE30");
+		button_12.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MemberDAO memberDAO = MemberDAO.getInstance();
+				ArrayList<MemberDTO> list = memberDAO.searchAllMembers();
+				
+				for (int i = 0; i < dtm1.getRowCount();) {
+					dtm1.removeRow(0);
+				}
+				
+				if(list.isEmpty()) {
+					
+				} else {
+					String gender = null;
+					for(MemberDTO member : list) {
+						if (member.getGender() == 0) { 
+							gender = "남";
+						}else{
+							gender = "여";
+						}
+						
+						Object data[] = { 
+								member.getMemberName(), member.getMemberId(), 
+								member.getPw(), gender, member.getAddress(), 
+								member.getTel1() + "-" + member.getTel2() + "-" + member.getTel3(), member.getEmail()
+						};
+						dtm1.addRow(data);
+					}
+				}
+			}
+		});
+		button_12.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+		button_12.setBounds(476, 120, 137, 30);
+		members.add(button_12);
 		
 		JPanel statement = new JPanel();
 		tabbedPane.addTab("\uB300\uC5EC \uAD00\uB9AC", null, statement, null);
@@ -1101,7 +1189,7 @@ public class AdminMain extends JFrame {
 				String blackList = null;
 				if(list.isEmpty()) {
 					JOptionPane.showMessageDialog(
-							null, "오늘 반납 예정인 회원이 없습니다.", "안내", 
+							null, "현재 연체 중인 회원이 없습니다.", "안내", 
 							JOptionPane.WARNING_MESSAGE);
 				}else {
 					
@@ -1209,6 +1297,10 @@ public class AdminMain extends JFrame {
 		JButton btnNewButton_4 = new JButton("\uC774\uBA54\uC77C \uC804\uC1A1");
 		btnNewButton_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (table_4Checked == -1) {
+					JOptionPane.showMessageDialog(null, "이메일을 보낼 회원을 선택하세요.");
+					return;
+				}
 				String targetID = (String) table_4.getValueAt(table_4Checked, 0);
 				MemberDAO memberDAO = MemberDAO.getInstance();
 				MemberDTO target = memberDAO.searchByID(targetID);

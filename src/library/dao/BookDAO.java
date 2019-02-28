@@ -23,9 +23,6 @@ public class BookDAO {
    private String user = "java";
    private String password = "itbank";
    
-   private DefaultTableModel dtm;
-   private ResultSet rs;
-
    private static BookDAO instance;
 
    //싱글톤 처리
@@ -90,108 +87,15 @@ public class BookDAO {
       return seq;
    }
 
-   public DefaultTableModel searchElement(DefaultTableModel dtm, String fieldName, String value) {
-	      this.dtm = dtm;
-	      
-	      //접속 연결
-	      Connection conn = getConnection();
-	      String sql = null;
-	      
-
-	      PreparedStatement pstmt = null;
-	      //ResultSet rs = null;
-	      
-	      switch(fieldName) {
-	      
-	      case "전체" :
-	         sql = "select * from books where code like '%"
-	               +value+"%' or bookname like '%"
-	               +value+ "%' or writer like '%"
-	               +value+"%' or publisher like '%"
-	               +value+"%'";      
-	         break;
-	         
-	      case "도서명" :
-	         sql = "select * from books where bookname like ?";
-	         break;         
-	         
-	      case "저자" :
-	         sql = "select * from books where writer like ?";
-	         break;            
-
-	      case "출판사" :
-	         sql = "select * from books where publisher like ?";
-	         break;      
-	         
-	      case "장르" :
-	         sql = "select * from books where code like ?";
-	         break;   
-	         
-	      }
-	      
-	      try {
-	         pstmt = conn.prepareStatement(sql);
-
-	         if (fieldName != "전체" ) pstmt.setString(1, "%" + value.trim() + "%");
-	                  
-	         rs = pstmt.executeQuery();
-	         
-	         
-	         
-	         // DefaultTableModel에 있는 기존 데이터 지우기
-	         for (int i = 0; i < dtm.getRowCount();) {
-	               dtm.removeRow(0);
-	           }         
-	         int num = 0;
-	         
-	         
-	         while (rs.next()) {
-	        	 String borrowed = null;
-		         
-		         if (rs.getString("st") == null) {
-		        	 //borrowed = "대여 가능";
-		         }else {
-		        	 borrowed = "대여 불가";	        	 
-		         }
-		         
-	              Object data[] = {Boolean.FALSE, rs.getInt(1), rs.getString(4), rs.getString(5),
-	                             rs.getString(6), rs.getString(3), borrowed};
-	                  
-	              dtm.addRow(data);
-	             
-	              num ++;
-	         }
-	         if(num ==0) {
-	            JOptionPane.showMessageDialog(
-	                  null, "검색한 단어의 책이 없습니다. \n검색을 원하시면 다시 입력해주세요.", "안내", 
-	                  JOptionPane.WARNING_MESSAGE);
-	         }
-	      } catch (SQLException e) {
-	         System.out.println(e + "=> getUserSearch fail");
-	      } finally {
-	         try {
-	            if (rs != null) rs.close();
-	            if (pstmt != null)
-	               pstmt.close();
-	            if (conn != null)
-	               conn.close();
-	         } catch (SQLException e) {
-	            e.printStackTrace();
-	         }
-	      }
-	      return dtm;
-
-
-	   }// search()
-   
    public ArrayList<BookDTO> searchElement(String fieldName, String value) {
-	   ArrayList<BookDTO> list = new ArrayList<>();
+	   		ArrayList<BookDTO> list = new ArrayList<BookDTO>();
+	      
 	      //접속 연결
 	      Connection conn = getConnection();
 	      String sql = null;
-
+	      
 	      PreparedStatement pstmt = null;
-	      //ResultSet rs = null;
+	      ResultSet rs = null;
 	      
 	      switch(fieldName) {
 	      
@@ -223,7 +127,7 @@ public class BookDAO {
 	      
 	      try {
 	         pstmt = conn.prepareStatement(sql);
-	         if (fieldName != "전체" ) pstmt.setString(1, "%" + value.trim() + "%");          
+	         if (fieldName != "전체" ) pstmt.setString(1, "%" + value.trim() + "%");	                  
 	         rs = pstmt.executeQuery();
 	         
 	         while (rs.next()) {
@@ -256,50 +160,23 @@ public class BookDAO {
 	      return list;
 
 
-	   }// 관리자 탭 1 검색에 사용 
+	   }// search()
    
-   public ArrayList<BookDTO> cart() {
+   
+   
+   public ArrayList<BookDTO> cart(ArrayList<Integer> list) {
 	      Connection conn = getConnection();
 	      PreparedStatement pstmt = null;
-
-	      
-	      ArrayList<Integer> list = new ArrayList<Integer>();
-	      //BookDTO bookDTOSeq = new BookDTO();
-	      //System.out.println(dtm.getRowCount());
-	      
-	      for (int i = 0; i < dtm.getRowCount() ; i++) {
-	         //System.out.println("1");
-	         Boolean CartCheck = Boolean.valueOf(dtm.getValueAt(i, 0).toString());
-	         int cartSeq = (int) dtm.getValueAt(i, 1);
-
-	         if (CartCheck) {
-	            //System.out.println(cartSeq);
-	        	 
-	        	 
-	        	 // 대여 불가 항목인지 판단하기
-	        	 if (searchByBookSeq(cartSeq).getSt() != null) {
-	        		 JOptionPane.showMessageDialog(
-	   	                  null, "선택 항목 중 대여불가 항목이 있습니다.\n체크한 항목을 확인해주세요.", "안내", 
-	   	                  JOptionPane.WARNING_MESSAGE);
-	        		 return null;
-	        	 }else {
-	        		 list.add(cartSeq);	        		 
-	        	 }
-	         }
-	      }
-
+	      ResultSet rs = null;
 	      
 	      ArrayList<BookDTO> cartList = new ArrayList<BookDTO>();
 
-
-	      for(int i = 0; i < list.size();i++) {
-
-	         
+	      for(int i = 0; i < list.size();i++) { 
 	         try {
 	            conn = getConnection();
-	            pstmt = null;
-	            
+	            pstmt = null;       
 	            String sql = "select * from books where seq =?";
+	            
 	            pstmt = conn.prepareStatement(sql);
 	            pstmt.setInt(1, list.get(i));
 	            
@@ -805,26 +682,29 @@ public class BookDAO {
 		}
 	}
 
-	public void allBook(DefaultTableModel model) {
-		String sql = "select * from books";
-		ResultSet rs = null;
+	public ArrayList<BookDTO> searchAllBooks() {
+		ArrayList<BookDTO> list = new ArrayList<>();
 		Connection conn = getConnection();
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "select * from books";
 
 		try {
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				int no = rs.getInt("seq");
-				String bookname = rs.getString("bookname");
-				String writer = rs.getString("writer");
-				String publisher = rs.getString("publisher");
-				String code = rs.getString("code");
-				String st = rs.getString("st");
-
-				// Object data[] = {code, bookname, writer, publisher, memberId, st};
-				model.addRow(new Object[] { no, bookname, writer, publisher, code, st });
+				BookDTO bookDTO = new BookDTO();
+				bookDTO.setSeq(rs.getInt("seq"));
+				bookDTO.setImage(rs.getString("image"));
+				bookDTO.setCode(rs.getString("code"));
+				bookDTO.setBookName(rs.getString("bookname"));
+				bookDTO.setWriter(rs.getString("writer"));
+				bookDTO.setPublisher(rs.getString("publisher"));
+				bookDTO.setMemberId(rs.getString("memberid"));
+				bookDTO.setSt(rs.getString("st"));
+				bookDTO.setEn(rs.getString("en"));
+				list.add(bookDTO);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -838,6 +718,8 @@ public class BookDAO {
 				e.printStackTrace();
 			}
 		}
+		
+		return list;
 	}
 	
 
@@ -846,6 +728,7 @@ public class BookDAO {
 	      
 	      Connection conn = getConnection();
 	      PreparedStatement pstmt = null;
+	      ResultSet rs = null;
 	      
 	      String sql = "select * from books where seq =?";
 	      try {
@@ -873,7 +756,15 @@ public class BookDAO {
 	         
 	      } catch (SQLException e) {
 	         e.printStackTrace();
-	      }
+	      }finally {
+				try {
+					if (rs != null) rs.close();
+					if (pstmt != null) pstmt.close();
+					if (conn != null) conn.close();
+				}catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 	      
 	      return bookDTO;   
 	   }   

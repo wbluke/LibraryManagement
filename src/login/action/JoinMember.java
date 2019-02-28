@@ -231,11 +231,20 @@ public class JoinMember extends JFrame implements ActionListener {
 			// System.out.println(emailT.getText()); //이메일 받아지는지 확인
 			auth = new SendEmail(emailT.getText(), "도서관 인증번호").getAuth();
 			System.out.println("인증번호 : " + auth);// 인증번호 확인
+			JOptionPane.showMessageDialog(null, "인증번호를 해당 이메일로 발송하였습니다.");
 		} // CertifiedB
 
 		// 인증 확인을 눌렀을때
 		else if (e.getSource() == numberconfirmB) {
+			if (certifiedNumT.getText().equals("")) {
+				JOptionPane.showMessageDialog(null, "인증번호를 입력해주세요.");
+				return;
+			}
 			if (joinCheak2 == false) {// 인증받기 버튼을 누른 상태
+				if (auth == null) {
+					JOptionPane.showMessageDialog(null, "인증메일을 발송해주세요.");
+					return;
+				}
 				if (auth.equals(certifiedNumT.getText())) {
 					JOptionPane.showMessageDialog(null, "인증이 완료되었습니다.");
 					joinCheak2 = true;
